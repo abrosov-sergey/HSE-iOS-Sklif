@@ -42,16 +42,15 @@ final class DicomFilesViewController: UIViewController {
   }
   
     private func setupLabels() {
-        mainLabel.text = "Серии снимков формата DICOM"
-        mainLabel.font = .systemFont(ofSize: 40.0, weight: .bold)
+        mainLabel.text = "Серии снимков"
+        mainLabel.font = .systemFont(ofSize: 36.0, weight: .bold)
         mainLabel.textColor = .white
 
         self.view.addSubview(mainLabel)
 
         mainLabel.translatesAutoresizingMaskIntoConstraints = false
         mainLabel.snp.makeConstraints { make in
-            make.height.equalTo(48)
-            make.centerY.equalTo(self.view.snp.centerY)
+            make.top.equalToSuperview().inset(89)
             make.left.equalToSuperview().inset(32)
         }
     }
