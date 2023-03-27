@@ -94,6 +94,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return (view.bounds.height - 179 - 413) / 3
     }
+    //fff
     
     //MARK: - TableViewDataSource
 //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -› CGFloat {
