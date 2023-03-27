@@ -20,6 +20,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
   private var tableOfDicom = UITableView()
   private let cellIndentifire = "Dicom"
+    
+  private var addButton = UIButton()
 
   var output: DicomFilesViewOutput?
 
@@ -42,6 +44,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
       
       setupLabels()
       createTableView()
+      setupButton()
   }
   
     private func setupLabels() {
@@ -97,15 +100,33 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         return cell
     }
     
+    //MARK: - TableViewDataSource
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return (view.bounds.height - 179 - 413) / 3
     }
-    //fff
     
-    //MARK: - TableViewDataSource
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -› CGFloat {
-//        return 100.0
-//    }
+    private func setupButton() {
+        addButton.setImage(UIImage(named: "plus.circle.fill"), for: .normal)
+        addButton.addTarget(self, action: #selector(addButtonAction), for: .touchUpInside)
+        addButton.tag = 1
+        
+        self.view.addSubview(addButton)
+        
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        addButton.snp.makeConstraints { make in
+//            make.left.right.equalToSuperview().inset(150)
+//            make.top.equalToSuperview().inset(714)
+            make.bottom.equalToSuperview().inset(54)
+            make.centerX.equalToSuperview()
+        }
+    }
+    
+    @objc func addButtonAction(sender: UIButton!) {
+        let btnsendtag: UIButton = sender
+        if btnsendtag.tag == 1 {
+            dismiss(animated: true, completion: nil)
+        }
+    }
     
   private func setupLocalization() {
 
