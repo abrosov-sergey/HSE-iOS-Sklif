@@ -54,7 +54,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         mainLabel.translatesAutoresizingMaskIntoConstraints = false
         mainLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(89)
-            make.left.equalToSuperview().inset(32)
+            make.left.equalToSuperview().inset(16)
         }
     }
     
@@ -75,6 +75,9 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             make.right.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().inset(413)
         }
+        
+        tableOfDicom.layer.cornerRadius = 15
+        tableOfDicom.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
     }
     
     //MARK: - TableViewDataSource
@@ -86,7 +89,10 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIndentifire, for: indexPath)
         
-        cell.textLabel?.text = "section = \(indexPath.section), cell = \(indexPath.row)"
+        cell.textLabel?.text = "Section = \(indexPath.section), Cell = \(indexPath.row)"
+        cell.textLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        cell.textLabel?.textColor = .white
+        cell.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
         
         return cell
     }
