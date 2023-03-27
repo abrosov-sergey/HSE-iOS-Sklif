@@ -10,14 +10,16 @@ protocol DicomFilesViewOutput: AnyObject {
 }
 
 
-final class DicomFilesViewController: UIViewController {
-
+final class DicomFilesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
   // MARK: - Outlets
 
 
   // MARK: - Properties
   
   private let mainLabel = UILabel()
+    
+  private var tableOfDicom = UITableView()
+  private let cellIndentifire = "Dicom"
 
   var output: DicomFilesViewOutput?
 
@@ -39,6 +41,7 @@ final class DicomFilesViewController: UIViewController {
       view.backgroundColor = .black
       
       setupLabels()
+      createTableView()
   }
   
     private func setupLabels() {
@@ -54,7 +57,49 @@ final class DicomFilesViewController: UIViewController {
             make.left.equalToSuperview().inset(32)
         }
     }
-
+    
+    private func createTableView() {
+        self.tableOfDicom = UITableView(frame: view.bounds, style: .plain)
+        tableOfDicom.register(UITableViewCell.self, forCellReuseIdentifier: cellIndentifire)
+        
+        self.tableOfDicom.delegate = self
+        self.tableOfDicom.dataSource = self
+        
+        self.view.addSubview(tableOfDicom)
+        
+//        tableOfDicom.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        tableOfDicom.translatesAutoresizingMaskIntoConstraints = false
+        tableOfDicom.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(179)
+            make.left.equalToSuperview().inset(16)
+            make.right.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(413)
+        }
+    }
+    
+    //MARK: - TableViewDataSource
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 3
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIndentifire, for: indexPath)
+        
+        cell.textLabel?.text = "section = \(indexPath.section), cell = \(indexPath.row)"
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return (view.bounds.height - 179 - 413) / 3
+    }
+    
+    //MARK: - TableViewDataSource
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -› CGFloat {
+//        return 100.0
+//    }
+    
   private func setupLocalization() {
 
   }
@@ -65,3 +110,16 @@ final class DicomFilesViewController: UIViewController {
 extension DicomFilesViewController: DicomFilesViewInput {
 
 }
+
+//  tableView.register(CustomTableViewCell.self, forCellReuseIdentifier: "yourCell")
+//
+//  // MARK: tableView
+//  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//    return 3 // set to value needed
+//  }
+//
+//  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//    let cell = tableView.dequeueReusableCell(withIdentifier: "yourCell", for: indexPath) as! CustomTableViewCell
+//    cell.textLabel?.text = "Cell at row \(indexPath.row)"
+//    return cell
+//  }
