@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import UniformTypeIdentifiers
 
 protocol DicomFilesViewInput: AnyObject {
 
@@ -10,7 +11,7 @@ protocol DicomFilesViewOutput: AnyObject {
 }
 
 
-final class DicomFilesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+final class DicomFilesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIDocumentPickerDelegate {
   // MARK: - Outlets
 
 
@@ -22,6 +23,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
   private let cellIndentifire = "Dicom"
     
   private var addButton = UIButton()
+    
+  private let supportedTypesOfFiles = [UTType.image, UTType.text, UTType.plainText, UTType.utf8PlainText,    UTType.utf16ExternalPlainText, UTType.utf16PlainText, UTType.delimitedText, UTType.commaSeparatedText,    UTType.tabSeparatedText, UTType.utf8TabSeparatedText, UTType.rtf, UTType.pdf, UTType.webArchive, UTType.image, UTType.jpeg, UTType.tiff, UTType.gif, UTType.png, UTType.bmp, UTType.ico, UTType.rawImage, UTType.svg, UTType.livePhoto, UTType.movie, UTType.video, UTType.audio, UTType.quickTimeMovie, UTType.mpeg,    UTType.mpeg2Video, UTType.mpeg2TransportStream, UTType.mp3, UTType.mpeg4Movie, UTType.mpeg4Audio, UTType.avi, UTType.aiff, UTType.wav, UTType.midi, UTType.archive, UTType.gzip, UTType.bz2, UTType.zip, UTType.appleArchive, UTType.spreadsheet, UTType.epub]
 
   var output: DicomFilesViewOutput?
 
@@ -125,6 +128,11 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         let btnsendtag: UIButton = sender
         if btnsendtag.tag == 1 {
             dismiss(animated: true, completion: nil)
+            
+            let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypesOfFiles, asCopy: true)
+            documentPicker.delegate = self
+            documentPicker.allowsMultipleSelection = false
+            present(documentPicker, animated: true, completion: nil)
         }
     }
     
