@@ -16,6 +16,8 @@
 		6379295A29D07891007667EE /* DicomFilesRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6379295629D07891007667EE /* DicomFilesRouter.swift */; };
 		6379295B29D07891007667EE /* DicomFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6379295729D07891007667EE /* DicomFilesViewController.swift */; };
 		6379295C29D07891007667EE /* DicomFilesModuleConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6379295829D07891007667EE /* DicomFilesModuleConfigurator.swift */; };
+		63CD854F29D1C3E800B0C6EC /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CD854E29D1C3E800B0C6EC /* TableViewCell.swift */; };
+		63CD855229D1D0A700B0C6EC /* ExtUIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CD855129D1D0A700B0C6EC /* ExtUIColor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 		6379295629D07891007667EE /* DicomFilesRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DicomFilesRouter.swift; sourceTree = "<group>"; };
 		6379295729D07891007667EE /* DicomFilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DicomFilesViewController.swift; sourceTree = "<group>"; };
 		6379295829D07891007667EE /* DicomFilesModuleConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DicomFilesModuleConfigurator.swift; sourceTree = "<group>"; };
+		63CD854E29D1C3E800B0C6EC /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		63CD855129D1D0A700B0C6EC /* ExtUIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtUIColor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,7 @@
 		6379293A29D06A78007667EE /* HSE-iOS-Sklif */ = {
 			isa = PBXGroup;
 			children = (
+				63CD855029D1D09000B0C6EC /* Extensions */,
 				6379295229D0785D007667EE /* Modules */,
 				6379293B29D06A78007667EE /* AppDelegate.swift */,
 				6379293F29D06A78007667EE /* ViewController.swift */,
@@ -95,6 +100,7 @@
 		6379295D29D079DD007667EE /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				63CD854E29D1C3E800B0C6EC /* TableViewCell.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -121,6 +127,14 @@
 				6379295629D07891007667EE /* DicomFilesRouter.swift */,
 			);
 			path = Router;
+			sourceTree = "<group>";
+		};
+		63CD855029D1D09000B0C6EC /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				63CD855129D1D0A700B0C6EC /* ExtUIColor.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -200,10 +214,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				6379294029D06A78007667EE /* ViewController.swift in Sources */,
+				63CD855229D1D0A700B0C6EC /* ExtUIColor.swift in Sources */,
 				6379295A29D07891007667EE /* DicomFilesRouter.swift in Sources */,
 				6379295929D07891007667EE /* DicomFilesPresenter.swift in Sources */,
 				6379295C29D07891007667EE /* DicomFilesModuleConfigurator.swift in Sources */,
 				6379293C29D06A78007667EE /* AppDelegate.swift in Sources */,
+				63CD854F29D1C3E800B0C6EC /* TableViewCell.swift in Sources */,
 				6379295B29D07891007667EE /* DicomFilesViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
