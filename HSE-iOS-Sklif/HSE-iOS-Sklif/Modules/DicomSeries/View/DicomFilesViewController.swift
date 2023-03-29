@@ -109,19 +109,32 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         return (view.bounds.height - 179 - 413) / 3
     }
     
-    private func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
+//    private func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+//        return true
+//    }
+    
+    private func tableView(_ tableView: UITableView, editActionForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Удалить") { (_, indexPath) in
+            
+            self.cellsInfo.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            tableView.reloadData()
+        }
+        
+        deleteAction.backgroundColor = .systemRed
+        return [deleteAction]
     }
 
-    private func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCell.EditingStyle, forRowAtIndexPath indexPath: IndexPath) {
-        if (editingStyle == .delete) {
-            // handle delete (by removing the data from your array and updating the tableview)
-            //tableView.cellForRow(at: NSIndexPath)?.delete(<#T##sender: Any?##Any?#>)
-            cellsInfo.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .bottom)
-            //tableView.reloadData()
-        }
-    }
+//    private func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCell.EditingStyle, forRowAtIndexPath indexPath: IndexPath) {
+//        if (editingStyle == .delete) {
+//            // handle delete (by removing the data from your array and updating the tableview)
+//            //tableView.cellForRow(at: NSIndexPath)?.delete(<#T##sender: Any?##Any?#>)
+//            cellsInfo.remove(at: indexPath.row)
+//            tableView.deleteRows(at: [indexPath], with: .bottom)
+//            //tableView.reloadData()
+//        }
+//    }
     
     private func setupButton() {
         addButton.setImage(UIImage(named: "plus.circle.fill"), for: .normal)
