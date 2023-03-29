@@ -132,7 +132,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         // Trash action
         let trash = UIContextualAction(style: .destructive,
                                        title: "Удалить") { [weak self] (action, view, completionHandler) in
-                                        self?.handleMoveToTrash()
+                                        self?.handleMoveToTrash(indexPath: indexPath)
                                         completionHandler(true)
         }
         trash.backgroundColor = .red
@@ -142,8 +142,11 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         return configuration
     }
     
-    private func handleMoveToTrash() {
-        print("Moved to trash")
+    private func handleMoveToTrash(indexPath: IndexPath) {
+        self.cellsInfo.remove(at: indexPath.row)
+        
+        self.tableOfDicom.deleteRows(at: [indexPath], with: .automatic)
+        self.tableOfDicom.reloadData()
     }
     
     func tableView(_ tableView: UITableView,
