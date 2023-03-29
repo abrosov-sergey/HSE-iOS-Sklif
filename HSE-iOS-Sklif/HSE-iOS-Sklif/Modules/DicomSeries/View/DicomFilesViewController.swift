@@ -112,18 +112,43 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
 //    private func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
 //        return true
 //    }
+//
+//    private func tableView(_ tableView: UITableView, editActionForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+//
+//        let deleteAction = UITableViewRowAction(style: .destructive, title: "Удалить") { (_, indexPath) in
+//
+//            self.cellsInfo.remove(at: indexPath.row)
+//            tableView.deleteRows(at: [indexPath], with: .automatic)
+//            tableView.reloadData()
+//        }
+//
+//        deleteAction.backgroundColor = .systemRed
+//        return [deleteAction]
+//    }
     
-    private func tableView(_ tableView: UITableView, editActionForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+    internal func tableView(_ tableView: UITableView,
+                       trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Удалить") { (_, indexPath) in
-            
-            self.cellsInfo.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
-            tableView.reloadData()
+        // Trash action
+        let trash = UIContextualAction(style: .destructive,
+                                       title: "Удалить") { [weak self] (action, view, completionHandler) in
+                                        self?.handleMoveToTrash()
+                                        completionHandler(true)
         }
-        
-        deleteAction.backgroundColor = .systemRed
-        return [deleteAction]
+        trash.backgroundColor = .red
+
+        let configuration = UISwipeActionsConfiguration(actions: [trash])
+
+        return configuration
+    }
+    
+    private func handleMoveToTrash() {
+        print("Moved to trash")
+    }
+    
+    func tableView(_ tableView: UITableView,
+                   editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
     }
 
 //    private func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCell.EditingStyle, forRowAtIndexPath indexPath: IndexPath) {
