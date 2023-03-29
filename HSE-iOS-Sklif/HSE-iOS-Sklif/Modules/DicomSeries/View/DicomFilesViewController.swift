@@ -21,6 +21,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
   private var tableOfDicom = UITableView()
   private let cellIndentifire = "Dicom"
+  private var cellsInfo = ["Cell - 1", "Cell - 2", "Cell - 3"]
     
   private var addButton = UIButton()
     
@@ -89,13 +90,13 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     //MARK: - TableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return cellsInfo.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIndentifire, for: indexPath)
         
-        cell.textLabel?.text = "Section = \(indexPath.section), Cell = \(indexPath.row)"
+        cell.textLabel?.text = cellsInfo[indexPath.row]
         cell.textLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
         cell.textLabel?.textColor = .white
         cell.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
@@ -106,6 +107,20 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     //MARK: - TableViewDataSource
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return (view.bounds.height - 179 - 413) / 3
+    }
+    
+    private func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+
+    private func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCell.EditingStyle, forRowAtIndexPath indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            // handle delete (by removing the data from your array and updating the tableview)
+            //tableView.cellForRow(at: NSIndexPath)?.delete(<#T##sender: Any?##Any?#>)
+            cellsInfo.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .bottom)
+            //tableView.reloadData()
+        }
     }
     
     private func setupButton() {
