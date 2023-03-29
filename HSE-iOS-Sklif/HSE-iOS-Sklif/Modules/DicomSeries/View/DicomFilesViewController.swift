@@ -80,7 +80,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             make.top.equalToSuperview().inset(179)
             make.left.equalToSuperview().inset(16)
             make.right.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(413)
+            make.bottom.equalToSuperview().inset(165)
         }
         
         tableOfDicom.layer.cornerRadius = 15
@@ -175,7 +175,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         addButton.snp.makeConstraints { make in
 //            make.left.right.equalToSuperview().inset(150)
 //            make.top.equalToSuperview().inset(714)
-            make.bottom.equalToSuperview().inset(54)
+            make.bottom.equalToSuperview().inset(40)
             make.centerX.equalToSuperview()
         }
     }
