@@ -21,7 +21,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
   private var tableOfDicom = UITableView()
   private let cellIndentifire = "Dicom"
-  private var cellsInfo = ["Cell - 1", "Cell - 2", "Cell - 3"]
+  private var cellsInfo = ["Один снимок формата .image", "Серия снимков формата .image", "Один снимок в серии DICOM", "Несколько снимков в серии DICOM"]
+//  private var cellsImages
     
   private var addButton = UIButton()
     
@@ -106,7 +107,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
     //MARK: - TableViewDataSource
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return (view.bounds.height - 179 - 413) / 3
+        return (view.bounds.height - 179 - 165) / CGFloat(cellsInfo.count)
     }
     
 //    private func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
