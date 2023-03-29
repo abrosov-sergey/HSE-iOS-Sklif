@@ -74,18 +74,14 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
             make.bottom.top.left.right.equalToSuperview()
         }
         
-        imageView.contentMode = .center
+        imageView.backgroundColor = .red
+        //imageView.contentMode = .center
         imageView.image = testImage
     }
-    
-//    private func newImageViewWithImage(rects: CGRect) -> UIImageView {
-//        let result = UIImageView(frame: rects)
-//
-//        return result
-//    }
 
   private func setupLocalization() {
 
