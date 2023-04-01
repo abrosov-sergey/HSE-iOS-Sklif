@@ -1,6 +1,7 @@
 import UIKit
 import SnapKit
 import UniformTypeIdentifiers
+import MobileCoreServices
 
 protocol DicomFilesViewInput: AnyObject {
 
@@ -186,12 +187,86 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         if btnsendtag.tag == 1 {
             dismiss(animated: true, completion: nil)
             
-            let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypesOfFiles, asCopy: true)
-            documentPicker.delegate = self
-            documentPicker.allowsMultipleSelection = false
-            present(documentPicker, animated: true, completion: nil)
+//            let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypesOfFiles, asCopy: true)
+//            documentPicker.delegate = self
+//            documentPicker.allowsMultipleSelection = false
+//            documentPicker.shouldShowFileExtensions = true
+//            present(documentPicker, animated: true, completion: nil)
+            
+            selectFiles()
         }
     }
+    
+    func selectFiles() {
+        let types = UTType.types(tag: "jpg",
+                                 tagClass: UTTagClass.filenameExtension,
+                                 conformingTo: nil)
+        
+        let documentPickerController = UIDocumentPickerViewController(forOpeningContentTypes: types)
+        documentPickerController.delegate = self
+        self.present(documentPickerController, animated: true, completion: nil)
+    }
+    
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let myURL = urls.first else {
+            return
+        }
+        print("import result : \(myURL)")
+    }
+
+//    public func documentMenu(_ documentMenu: UIDocumentMenuViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
+//        documentPicker.delegate = self
+//        present(documentPicker, animated: true, completion: nil)
+//    }
+//
+//    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+//        print("view was cancelled")
+//        dismiss(animated: true, completion: nil)
+//    }
+    
+//    func clickFunction(){
+//        let importMenu = UIDocumentMenuViewController(documentTypes: [String(kUTTypePDF)], in: .import)
+//        importMenu.delegate = self
+//        importMenu.modalPresentationStyle = .formSheet
+//        self.present(importMenu, animated: true, completion: nil)
+//    }
+    
+//    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+//        //print(urls)
+//        print("YES data")
+//        do {
+//            var documentData = [Data]()
+//            for url in urls {
+//                documentData.append(try Data(contentsOf: url))
+//            }
+//
+//            //print(urls)
+//
+//            //hopefully you have an array of data elements now :)
+//            //uploadMultipartFile()
+//        } catch {
+//            print("no data")
+//            print("no data")
+//            print("no data")
+//        }
+//    }
+    
+//    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+//        guard
+//            let url = urls.first,
+//            url.startAccessingSecurityScopedResource()
+//        else {
+//                return
+//        }
+//        defer { url.stopAccessingSecurityScopedResource() }
+//        do {
+//            let data = try Data(contentsOf: url)
+//            print(data)
+//            //DO SMTH WITH YOUR DATA
+//        } catch {
+//                print(error)
+//        }
+//    }
     
   private func setupLocalization() {
 
