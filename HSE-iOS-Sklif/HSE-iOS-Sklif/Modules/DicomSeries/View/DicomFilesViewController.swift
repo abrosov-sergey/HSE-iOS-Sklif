@@ -211,7 +211,11 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         guard let myURL = urls.first else {
             return
         }
+        
         print("import result : \(myURL)")
+        
+        cellsInfo.append("Ваш снимок с адресом: \(myURL)")
+        tableOfDicom.reloadData()
     }
 
 //    public func documentMenu(_ documentMenu: UIDocumentMenuViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
