@@ -212,9 +212,14 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             return
         }
         
-        print("import result : \(myURL)")
+        var stringURL = "\(myURL)"
+        var separatingStringURL = stringURL.components(separatedBy: "/")
         
-        cellsInfo.append("Ваш снимок с адресом: \(myURL)")
+        //print("import result : \(myURL)")
+        
+        //cellsInfo.append("Ваш снимок: \(myURL)")
+        cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
+        // Add in array
         tableOfDicom.reloadData()
     }
 
