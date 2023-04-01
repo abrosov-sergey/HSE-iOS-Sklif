@@ -21,6 +21,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
   private var tableOfDicom = UITableView()
   private let cellIndentifire = "Dicom"
+  private var cellsInfo = ["Один снимок формата .image", "Серия снимков формата .image", "Один снимок в серии DICOM", "Несколько снимков в серии DICOM"]
+//  private var cellsImages
     
   private var addButton = UIButton()
     
@@ -79,7 +81,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             make.top.equalToSuperview().inset(179)
             make.left.equalToSuperview().inset(16)
             make.right.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(413)
+            make.bottom.equalToSuperview().inset(165)
         }
         
         tableOfDicom.layer.cornerRadius = 15
@@ -89,13 +91,13 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     //MARK: - TableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return cellsInfo.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIndentifire, for: indexPath)
         
-        cell.textLabel?.text = "Section = \(indexPath.section), Cell = \(indexPath.row)"
+        cell.textLabel?.text = cellsInfo[indexPath.row]
         cell.textLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
         cell.textLabel?.textColor = .white
         cell.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
@@ -105,8 +107,63 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
     //MARK: - TableViewDataSource
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return (view.bounds.height - 179 - 413) / 3
+        return (view.bounds.height - 179 - 165) / CGFloat(cellsInfo.count)
     }
+    
+//    private func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+//        return true
+//    }
+//
+//    private func tableView(_ tableView: UITableView, editActionForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+//
+//        let deleteAction = UITableViewRowAction(style: .destructive, title: "Удалить") { (_, indexPath) in
+//
+//            self.cellsInfo.remove(at: indexPath.row)
+//            tableView.deleteRows(at: [indexPath], with: .automatic)
+//            tableView.reloadData()
+//        }
+//
+//        deleteAction.backgroundColor = .systemRed
+//        return [deleteAction]
+//    }
+    
+    internal func tableView(_ tableView: UITableView,
+                       trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        // Trash action
+        let trash = UIContextualAction(style: .destructive,
+                                       title: "Удалить") { [weak self] (action, view, completionHandler) in
+                                        self?.handleMoveToTrash(indexPath: indexPath)
+                                        completionHandler(true)
+        }
+        trash.backgroundColor = .red
+
+        let configuration = UISwipeActionsConfiguration(actions: [trash])
+
+        return configuration
+    }
+    
+    private func handleMoveToTrash(indexPath: IndexPath) {
+        self.cellsInfo.remove(at: indexPath.row)
+        
+        self.tableOfDicom.deleteRows(at: [indexPath], with: .automatic)
+        self.tableOfDicom.reloadData()
+    }
+    
+    func tableView(_ tableView: UITableView,
+                   editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
+    }
+
+//    private func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCell.EditingStyle, forRowAtIndexPath indexPath: IndexPath) {
+//        if (editingStyle == .delete) {
+//            // handle delete (by removing the data from your array and updating the tableview)
+//            //tableView.cellForRow(at: NSIndexPath)?.delete(<#T##sender: Any?##Any?#>)
+//            cellsInfo.remove(at: indexPath.row)
+//            tableView.deleteRows(at: [indexPath], with: .bottom)
+//            //tableView.reloadData()
+//        }
+//    }
     
     private func setupButton() {
         addButton.setImage(UIImage(named: "plus.circle.fill"), for: .normal)
@@ -119,7 +176,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         addButton.snp.makeConstraints { make in
 //            make.left.right.equalToSuperview().inset(150)
 //            make.top.equalToSuperview().inset(714)
-            make.bottom.equalToSuperview().inset(54)
+            make.bottom.equalToSuperview().inset(40)
             make.centerX.equalToSuperview()
         }
     }
