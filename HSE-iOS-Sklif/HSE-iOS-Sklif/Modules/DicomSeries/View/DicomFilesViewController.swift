@@ -22,13 +22,19 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
   private var tableOfDicom = UITableView()
   private let cellIndentifire = "Dicom"
-  private var cellsInfo = ["Один снимок формата .image", "Серия снимков формата .image", "Один снимок в серии DICOM", "Несколько снимков в серии DICOM"]
-//  private var cellsImages
+  private var cellsInfo = ["Тестовый снимок", "Тестовая серия снимков"]
+  private var cellTestURLs = ["telegram-cloud-photo-size-2-5431460014284979770-y 1", "telegram-cloud-photo-size-2-5431460014284979770-y 1"]
+  private var cellURLs = [""]
+  private var cellUserURLs = [""]
+  private var countOfDeletingTestCells = 0
     
   private var addButton = UIButton()
     
   private let supportedTypesOfFiles = [UTType.image, UTType.text, UTType.plainText, UTType.utf8PlainText,    UTType.utf16ExternalPlainText, UTType.utf16PlainText, UTType.delimitedText, UTType.commaSeparatedText,    UTType.tabSeparatedText, UTType.utf8TabSeparatedText, UTType.rtf, UTType.pdf, UTType.webArchive, UTType.image, UTType.jpeg, UTType.tiff, UTType.gif, UTType.png, UTType.bmp, UTType.ico, UTType.rawImage, UTType.svg, UTType.livePhoto, UTType.movie, UTType.video, UTType.audio, UTType.quickTimeMovie, UTType.mpeg,    UTType.mpeg2Video, UTType.mpeg2TransportStream, UTType.mp3, UTType.mpeg4Movie, UTType.mpeg4Audio, UTType.avi, UTType.aiff, UTType.wav, UTType.midi, UTType.archive, UTType.gzip, UTType.bz2, UTType.zip, UTType.appleArchive, UTType.spreadsheet, UTType.epub]
 
+    
+  private let userDefaults = UserDefaults()
+    
   var output: DicomFilesViewOutput?
 
   // MARK: - UIViewController
@@ -47,6 +53,29 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
 
   private func setupUI() {
       view.backgroundColor = .black
+      
+      switch userDefaults.value(forKey: "cellURLs") {
+      case let stringArray as [String]:
+          if stringArray.count > 0 {
+              cellURLs = cellTestURLs + stringArray
+              cellUserURLs = stringArray
+              
+              for cellName in cellUserURLs {
+                  let separatingStringURL = cellName.components(separatedBy: "/")
+                  
+                  cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
+              }
+          } else {
+              cellURLs = cellTestURLs
+              cellUserURLs = [String]()
+          }
+      default:
+          cellURLs = cellTestURLs
+          cellUserURLs = [String]()
+      }
+      
+      countOfDeletingTestCells = 0
+//      print(cellURLs)
       
       setupLabels()
       createTableView()
@@ -76,7 +105,6 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         
         self.view.addSubview(tableOfDicom)
         
-//        tableOfDicom.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         tableOfDicom.translatesAutoresizingMaskIntoConstraints = false
         tableOfDicom.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(179)
@@ -111,23 +139,6 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         return (view.bounds.height - 179 - 165) / CGFloat(cellsInfo.count)
     }
     
-//    private func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-//        return true
-//    }
-//
-//    private func tableView(_ tableView: UITableView, editActionForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-//
-//        let deleteAction = UITableViewRowAction(style: .destructive, title: "Удалить") { (_, indexPath) in
-//
-//            self.cellsInfo.remove(at: indexPath.row)
-//            tableView.deleteRows(at: [indexPath], with: .automatic)
-//            tableView.reloadData()
-//        }
-//
-//        deleteAction.backgroundColor = .systemRed
-//        return [deleteAction]
-//    }
-    
     internal func tableView(_ tableView: UITableView,
                        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
@@ -146,6 +157,23 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
     private func handleMoveToTrash(indexPath: IndexPath) {
         self.cellsInfo.remove(at: indexPath.row)
+        self.cellURLs.remove(at: indexPath.row)
+        
+        if indexPath.row >= (2 - countOfDeletingTestCells) {
+            self.cellUserURLs.remove(at: indexPath.row - 2 + countOfDeletingTestCells)
+        }
+        
+        if indexPath.row == 0 || indexPath.row == 1 {
+            if countOfDeletingTestCells == 0 && indexPath.row == 0 {
+                countOfDeletingTestCells += 1
+            } else if countOfDeletingTestCells == 0 && indexPath.row == 1 {
+                countOfDeletingTestCells += 1
+            } else if countOfDeletingTestCells == 1 && indexPath.row == 0 {
+                countOfDeletingTestCells += 1
+            }
+        }
+        
+        userDefaults.set(cellUserURLs, forKey: "cellURLs")
         
         self.tableOfDicom.deleteRows(at: [indexPath], with: .automatic)
         self.tableOfDicom.reloadData()
@@ -156,16 +184,6 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         return .none
     }
 
-//    private func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCell.EditingStyle, forRowAtIndexPath indexPath: IndexPath) {
-//        if (editingStyle == .delete) {
-//            // handle delete (by removing the data from your array and updating the tableview)
-//            //tableView.cellForRow(at: NSIndexPath)?.delete(<#T##sender: Any?##Any?#>)
-//            cellsInfo.remove(at: indexPath.row)
-//            tableView.deleteRows(at: [indexPath], with: .bottom)
-//            //tableView.reloadData()
-//        }
-//    }
-    
     private func setupButton() {
         addButton.setImage(UIImage(named: "plus.circle.fill"), for: .normal)
         addButton.addTarget(self, action: #selector(addButtonAction), for: .touchUpInside)
@@ -175,8 +193,6 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.snp.makeConstraints { make in
-//            make.left.right.equalToSuperview().inset(150)
-//            make.top.equalToSuperview().inset(714)
             make.bottom.equalToSuperview().inset(40)
             make.centerX.equalToSuperview()
         }
@@ -186,12 +202,6 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         let btnsendtag: UIButton = sender
         if btnsendtag.tag == 1 {
             dismiss(animated: true, completion: nil)
-            
-//            let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypesOfFiles, asCopy: true)
-//            documentPicker.delegate = self
-//            documentPicker.allowsMultipleSelection = false
-//            documentPicker.shouldShowFileExtensions = true
-//            present(documentPicker, animated: true, completion: nil)
             
             selectFiles()
         }
@@ -212,70 +222,20 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             return
         }
         
-        var stringURL = "\(myURL)"
-        var separatingStringURL = stringURL.components(separatedBy: "/")
+        let stringURL = "\(myURL)"
+        let separatingStringURL = stringURL.components(separatedBy: "/")
         
-        //print("import result : \(myURL)")
-        
-        //cellsInfo.append("Ваш снимок: \(myURL)")
         cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
+        cellURLs.append(stringURL)
+        cellUserURLs.append(stringURL)
+        
+        print(cellUserURLs)
+        
+        userDefaults.setValue(cellUserURLs, forKey: "cellURLs")
+        
         // Add in array
         tableOfDicom.reloadData()
     }
-
-//    public func documentMenu(_ documentMenu: UIDocumentMenuViewController, didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
-//        documentPicker.delegate = self
-//        present(documentPicker, animated: true, completion: nil)
-//    }
-//
-//    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-//        print("view was cancelled")
-//        dismiss(animated: true, completion: nil)
-//    }
-    
-//    func clickFunction(){
-//        let importMenu = UIDocumentMenuViewController(documentTypes: [String(kUTTypePDF)], in: .import)
-//        importMenu.delegate = self
-//        importMenu.modalPresentationStyle = .formSheet
-//        self.present(importMenu, animated: true, completion: nil)
-//    }
-    
-//    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-//        //print(urls)
-//        print("YES data")
-//        do {
-//            var documentData = [Data]()
-//            for url in urls {
-//                documentData.append(try Data(contentsOf: url))
-//            }
-//
-//            //print(urls)
-//
-//            //hopefully you have an array of data elements now :)
-//            //uploadMultipartFile()
-//        } catch {
-//            print("no data")
-//            print("no data")
-//            print("no data")
-//        }
-//    }
-    
-//    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-//        guard
-//            let url = urls.first,
-//            url.startAccessingSecurityScopedResource()
-//        else {
-//                return
-//        }
-//        defer { url.stopAccessingSecurityScopedResource() }
-//        do {
-//            let data = try Data(contentsOf: url)
-//            print(data)
-//            //DO SMTH WITH YOUR DATA
-//        } catch {
-//                print(error)
-//        }
-//    }
     
   private func setupLocalization() {
 
@@ -287,16 +247,3 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
 extension DicomFilesViewController: DicomFilesViewInput {
 
 }
-
-//  tableView.register(CustomTableViewCell.self, forCellReuseIdentifier: "yourCell")
-//
-//  // MARK: tableView
-//  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//    return 3 // set to value needed
-//  }
-//
-//  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//    let cell = tableView.dequeueReusableCell(withIdentifier: "yourCell", for: indexPath) as! CustomTableViewCell
-//    cell.textLabel?.text = "Cell at row \(indexPath.row)"
-//    return cell
-//  }
