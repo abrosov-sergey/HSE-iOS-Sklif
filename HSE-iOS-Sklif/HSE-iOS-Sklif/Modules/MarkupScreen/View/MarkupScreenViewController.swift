@@ -20,6 +20,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     
     private var imageScrollView = UIScrollView()
     private var imageView: UIImageView!
+    private var sliderForPhoto = UISlider()
 
   // MARK: - UIViewController
 
@@ -41,6 +42,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
       
       createScrollView()
       addTestImage()
+      setupSlider()
   }
 
     private func createScrollView() {
@@ -55,7 +57,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.top.equalToSuperview().inset(63)
             make.left.equalToSuperview().inset(7)
             make.right.equalToSuperview().inset(7)
-            make.bottom.equalToSuperview().inset(63)
+            make.bottom.equalToSuperview().inset(100)
         }
 
         imageScrollView.isPagingEnabled = true
@@ -107,6 +109,21 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         // Your action
     }
 
+    private func setupSlider() {
+        self.view.addSubview(sliderForPhoto)
+        
+        sliderForPhoto.translatesAutoresizingMaskIntoConstraints = false
+        sliderForPhoto.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.left.right.equalToSuperview().inset(14)
+            make.bottom.equalToSuperview().inset(50)
+        }
+        
+        sliderForPhoto.value = 0
+        sliderForPhoto.thumbTintColor = UIColor(red: 47, green: 47, blue: 50)
+        sliderForPhoto.tintColor = UIColor(red: 47, green: 47, blue: 117)
+    }
+    
   private func setupLocalization() {
 
   }
