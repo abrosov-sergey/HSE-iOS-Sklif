@@ -183,6 +183,10 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
                    editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .none
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 
     private func setupButton() {
         addButton.setImage(UIImage(named: "plus.circle.fill"), for: .normal)
@@ -208,11 +212,12 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     func selectFiles() {
-        let types = UTType.types(tag: "jpg",
-                                 tagClass: UTTagClass.filenameExtension,
-                                 conformingTo: nil)
+//        let types = UTType.types(tag: "jpg",
+//                                 tagClass: UTTagClass.filenameExtension,
+//                                 conformingTo: nil)
+//
         
-        let documentPickerController = UIDocumentPickerViewController(forOpeningContentTypes: types)
+        let documentPickerController = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypesOfFiles)
         documentPickerController.delegate = self
         self.present(documentPickerController, animated: true, completion: nil)
     }
