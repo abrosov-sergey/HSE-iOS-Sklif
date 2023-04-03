@@ -19,6 +19,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
   var output: MarkupScreenViewOutput?
     
     private var imageScrollView = UIScrollView()
+    private var imageView: UIImageView!
 
   // MARK: - UIViewController
 
@@ -43,14 +44,12 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
   }
 
     private func createScrollView() {
-        self.imageScrollView = UIScrollView(frame: view.bounds)
-        imageScrollView.isPagingEnabled = true
+        imageScrollView = UIScrollView(frame: view.bounds)
         
-        self.imageScrollView.delegate = self
+        imageScrollView.delegate = self
         
         self.view.addSubview(imageScrollView)
         
-    //        tableOfDicom.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         imageScrollView.translatesAutoresizingMaskIntoConstraints = false
         imageScrollView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(63)
@@ -58,17 +57,25 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.right.equalToSuperview().inset(7)
             make.bottom.equalToSuperview().inset(63)
         }
-        
+
+        imageScrollView.isPagingEnabled = true
         imageScrollView.layer.cornerRadius = 15
         imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+        imageScrollView.decelerationRate = UIScrollView.DecelerationRate.normal
+        imageScrollView.alwaysBounceVertical = false
+        imageScrollView.alwaysBounceHorizontal = false
+        imageScrollView.showsVerticalScrollIndicator = true
+        imageScrollView.flashScrollIndicators()
+        imageScrollView.minimumZoomScale = 0.1
+        imageScrollView.maximumZoomScale = 5.0
     }
     
     private func addTestImage() {
-//        var testImage: UIImage?
-        let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")
+        imageView?.removeFromSuperview()
+        imageView = nil
         
-//        var rect = self.view.bounds
-        let imageView = UIImageView()
+        let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")!
+        imageView = UIImageView()
         
         self.imageScrollView.addSubview(imageView)
         
@@ -78,9 +85,26 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.top.left.right.equalToSuperview()
         }
         
-        imageView.backgroundColor = .red
-        //imageView.contentMode = .center
         imageView.image = testImage
+        imageView.layer.cornerRadius = 11.0
+        imageView.clipsToBounds = false
+        imageView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+        imageView.contentMode = .center
+        imageView.isUserInteractionEnabled = true
+    
+        imageScrollView.contentSize = testImage.size
+        
+//        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+//        imageView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    internal func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.imageView
+    }
+    
+    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
+        let tappedImage = tapGestureRecognizer.view as! UIImageView
+        // Your action
     }
 
   private func setupLocalization() {
