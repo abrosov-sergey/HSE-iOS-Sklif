@@ -57,20 +57,17 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.right.equalToSuperview().inset(7)
             make.bottom.equalToSuperview().inset(63)
         }
-        
-        var vWidth = self.view.frame.width
-        var vHeight = self.view.frame.height
 
         imageScrollView.isPagingEnabled = true
         imageScrollView.layer.cornerRadius = 15
         imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
-        imageScrollView.decelerationRate = UIScrollView.DecelerationRate.fast
+        imageScrollView.decelerationRate = UIScrollView.DecelerationRate.normal
         imageScrollView.alwaysBounceVertical = false
         imageScrollView.alwaysBounceHorizontal = false
         imageScrollView.showsVerticalScrollIndicator = true
         imageScrollView.flashScrollIndicators()
         imageScrollView.minimumZoomScale = 0.1
-        imageScrollView.maximumZoomScale = 10.0
+        imageScrollView.maximumZoomScale = 5.0
     }
     
     private func addTestImage() {
@@ -78,7 +75,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView = nil
         
         let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")!
-        imageView = UIImageView(image: testImage)
+        imageView = UIImageView()
         
         self.imageScrollView.addSubview(imageView)
         
@@ -88,13 +85,14 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.top.left.right.equalToSuperview()
         }
         
+        imageView.image = testImage
         imageView.layer.cornerRadius = 11.0
         imageView.clipsToBounds = false
-        imageView.backgroundColor = .red
+        imageView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+        imageView.contentMode = .center
         imageView.isUserInteractionEnabled = true
     
         imageScrollView.contentSize = testImage.size
-        //imageView.contentMode = .center
         
 //        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
 //        imageView.addGestureRecognizer(tapGestureRecognizer)
