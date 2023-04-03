@@ -61,14 +61,30 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         
         imageScrollView.layer.cornerRadius = 15
         imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+        
+        var vWidth = self.view.frame.width
+        var vHeight = self.view.frame.height
+
+        imageScrollView.alwaysBounceVertical = false
+        imageScrollView.alwaysBounceHorizontal = false
+        imageScrollView.showsVerticalScrollIndicator = true
+        imageScrollView.flashScrollIndicators()
+
+        imageScrollView.minimumZoomScale = 1.0
+        imageScrollView.maximumZoomScale = 10.0
     }
     
     private func addTestImage() {
 //        var testImage: UIImage?
         let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")
         
+//        testImage.isUserInteractionEnabled = true
+        
 //        var rect = self.view.bounds
         let imageView = UIImageView()
+        
+        imageView.layer.cornerRadius = 11.0
+        imageView.clipsToBounds = false
         
         self.imageScrollView.addSubview(imageView)
         
@@ -81,6 +97,15 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView.backgroundColor = .red
         //imageView.contentMode = .center
         imageView.image = testImage
+        
+//        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        imageView.isUserInteractionEnabled = true
+//        imageView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
+        let tappedImage = tapGestureRecognizer.view as! UIImageView
+        // Your action
     }
 
   private func setupLocalization() {
