@@ -19,6 +19,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
   var output: MarkupScreenViewOutput?
     
     private var imageScrollView = UIScrollView()
+    private var imageView: UIImageView!
 
   // MARK: - UIViewController
 
@@ -43,14 +44,12 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
   }
 
     private func createScrollView() {
-        self.imageScrollView = UIScrollView(frame: view.bounds)
-        imageScrollView.isPagingEnabled = true
+        imageScrollView = UIScrollView(frame: view.bounds)
         
-        self.imageScrollView.delegate = self
+        imageScrollView.delegate = self
         
         self.view.addSubview(imageScrollView)
         
-    //        tableOfDicom.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         imageScrollView.translatesAutoresizingMaskIntoConstraints = false
         imageScrollView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(63)
@@ -59,32 +58,27 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.equalToSuperview().inset(63)
         }
         
-        imageScrollView.layer.cornerRadius = 15
-        imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
-        
         var vWidth = self.view.frame.width
         var vHeight = self.view.frame.height
 
+        imageScrollView.isPagingEnabled = true
+        imageScrollView.layer.cornerRadius = 15
+        imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+        imageScrollView.decelerationRate = UIScrollView.DecelerationRate.fast
         imageScrollView.alwaysBounceVertical = false
         imageScrollView.alwaysBounceHorizontal = false
         imageScrollView.showsVerticalScrollIndicator = true
         imageScrollView.flashScrollIndicators()
-
-        imageScrollView.minimumZoomScale = 1.0
+        imageScrollView.minimumZoomScale = 0.1
         imageScrollView.maximumZoomScale = 10.0
     }
     
     private func addTestImage() {
-//        var testImage: UIImage?
-        let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")
+        imageView?.removeFromSuperview()
+        imageView = nil
         
-//        testImage.isUserInteractionEnabled = true
-        
-//        var rect = self.view.bounds
-        let imageView = UIImageView()
-        
-        imageView.layer.cornerRadius = 11.0
-        imageView.clipsToBounds = false
+        let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")!
+        imageView = UIImageView(image: testImage)
         
         self.imageScrollView.addSubview(imageView)
         
@@ -94,13 +88,20 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.top.left.right.equalToSuperview()
         }
         
+        imageView.layer.cornerRadius = 11.0
+        imageView.clipsToBounds = false
         imageView.backgroundColor = .red
+        imageView.isUserInteractionEnabled = true
+    
+        imageScrollView.contentSize = testImage.size
         //imageView.contentMode = .center
-        imageView.image = testImage
         
 //        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
-        imageView.isUserInteractionEnabled = true
 //        imageView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    internal func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.imageView
     }
     
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
