@@ -121,7 +121,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         
         sliderForPhoto.value = 0
         sliderForPhoto.thumbTintColor = UIColor(red: 47, green: 47, blue: 50)
-        sliderForPhoto.tintColor = UIColor(red: 47, green: 47, blue: 117)
+        sliderForPhoto.tintColor = UIColor(red: 47, green: 47, blue: 155)
     }
     
   private func setupLocalization() {
