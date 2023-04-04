@@ -32,7 +32,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     
     view.backgroundColor = .black
     
-    listOfPhotos = ["1", "2", "3", "4", "5", "6", "6", "6", "6", "6", "6"]
+    listOfPhotos = ["11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
     
     setupUI()
   }
@@ -70,9 +70,10 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageScrollView.decelerationRate = UIScrollView.DecelerationRate.normal
         imageScrollView.alwaysBounceVertical = false
         imageScrollView.alwaysBounceHorizontal = false
-        imageScrollView.showsVerticalScrollIndicator = true
+        imageScrollView.showsVerticalScrollIndicator = false
+        imageScrollView.showsHorizontalScrollIndicator = true
         imageScrollView.flashScrollIndicators()
-        imageScrollView.minimumZoomScale = 0.1
+        imageScrollView.minimumZoomScale = 1.0
         imageScrollView.maximumZoomScale = 5.0
         imageScrollView.layer.borderColor = CGColor(red: 0.1, green: 0.1, blue: 0.55, alpha: 1)
         imageScrollView.layer.borderWidth = 2.5
@@ -96,10 +97,10 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView.image = testImage
         imageView.layer.cornerRadius = 11.0
         imageView.clipsToBounds = false
-//        imageView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
         imageView.backgroundColor = .black
         imageView.contentMode = .center
         imageView.isUserInteractionEnabled = true
+        imageView.center = imageScrollView.center
     
         imageScrollView.contentSize = testImage.size
         
@@ -109,6 +110,10 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     
     internal func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.imageView
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        //
     }
     
 //    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
@@ -127,7 +132,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         }
         
         sliderForPhoto.thumbTintColor = UIColor(red: 47, green: 47, blue: 50)
-        sliderForPhoto.tintColor = UIColor(red: 47, green: 47, blue: 155)
+        sliderForPhoto.tintColor = UIColor(red: 25, green: 25, blue: 140)
         sliderForPhoto.minimumValue = 0
         sliderForPhoto.maximumValue = Float(listOfPhotos.count - 1)
         sliderForPhoto.value = 1
@@ -138,7 +143,9 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     
     @objc func sliderValueChange(sender: UISlider) {
         var currentValue = Int(sender.value)
-        var sliderRow = sender.tag
+//        var sliderRow = sender.tag
+        
+        self.imageView.image = UIImage(named: listOfPhotos[currentValue])
         
         print(currentValue)
     }
