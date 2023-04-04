@@ -21,6 +21,8 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     private var imageScrollView = UIScrollView()
     private var imageView: UIImageView!
     private var sliderForPhoto = UISlider()
+    
+    private var listOfPhotos = [String]()
 
   // MARK: - UIViewController
 
@@ -29,7 +31,9 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     output?.viewDidLoad()
     
     view.backgroundColor = .black
-      
+    
+    listOfPhotos = ["1", "2", "3", "4", "5", "6", "6", "6", "6", "6", "6"]
+    
     setupUI()
   }
 
@@ -39,7 +43,6 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
   // MARK: - Setup
 
   private func setupUI() {
-      
       createScrollView()
       addTestImage()
       setupSlider()
@@ -62,7 +65,8 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
 
         imageScrollView.isPagingEnabled = true
         imageScrollView.layer.cornerRadius = 15
-        imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+//        imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+        imageScrollView.backgroundColor = .black
         imageScrollView.decelerationRate = UIScrollView.DecelerationRate.normal
         imageScrollView.alwaysBounceVertical = false
         imageScrollView.alwaysBounceHorizontal = false
@@ -90,7 +94,8 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView.image = testImage
         imageView.layer.cornerRadius = 11.0
         imageView.clipsToBounds = false
-        imageView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+//        imageView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
+        imageView.backgroundColor = .black
         imageView.contentMode = .center
         imageView.isUserInteractionEnabled = true
     
@@ -104,10 +109,10 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         return self.imageView
     }
     
-    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
-        let tappedImage = tapGestureRecognizer.view as! UIImageView
-        // Your action
-    }
+//    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
+//        let tappedImage = tapGestureRecognizer.view as! UIImageView
+//        // Your action
+//    }
 
     private func setupSlider() {
         self.view.addSubview(sliderForPhoto)
@@ -119,9 +124,21 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.equalToSuperview().inset(50)
         }
         
-        sliderForPhoto.value = 0
         sliderForPhoto.thumbTintColor = UIColor(red: 47, green: 47, blue: 50)
         sliderForPhoto.tintColor = UIColor(red: 47, green: 47, blue: 155)
+        sliderForPhoto.minimumValue = 0
+        sliderForPhoto.maximumValue = Float(listOfPhotos.count - 1)
+        sliderForPhoto.value = 1
+        sliderForPhoto.tag = 1
+
+        sliderForPhoto.addTarget(self, action: #selector(sliderValueChange(sender:)), for: .valueChanged)
+    }
+    
+    @objc func sliderValueChange(sender: UISlider) {
+        var currentValue = Int(sender.value)
+        var sliderRow = sender.tag
+        
+        print(currentValue)
     }
     
   private func setupLocalization() {
