@@ -74,6 +74,8 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageScrollView.flashScrollIndicators()
         imageScrollView.minimumZoomScale = 0.1
         imageScrollView.maximumZoomScale = 5.0
+        imageScrollView.layer.borderColor = CGColor(red: 0.1, green: 0.1, blue: 0.55, alpha: 1)
+        imageScrollView.layer.borderWidth = 2.5
     }
     
     private func addTestImage() {
