@@ -32,7 +32,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     
     view.backgroundColor = .black
     
-    listOfPhotos = ["11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
+    listOfPhotos = ["file:///Users/sergeyabrosov/Library/Developer/CoreSimulator/Devices/CBB4E03E-4E64-418D-8926-87044F5C200A/data/Containers/Shared/AppGroup/EFA30EB2-323E-4CED-A605-191AF1F17C6D/File%20Provider%20Storage/%D0%97%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/njashnye-kotiki4%202", "11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
     
     setupUI()
   }
@@ -146,8 +146,6 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
 //        var sliderRow = sender.tag
         
         self.imageView.image = UIImage(named: listOfPhotos[currentValue])
-        
-        print(currentValue)
     }
     
   private func setupLocalization() {
