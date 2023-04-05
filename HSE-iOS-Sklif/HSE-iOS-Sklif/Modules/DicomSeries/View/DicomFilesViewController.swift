@@ -60,6 +60,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
               cellURLs = cellTestURLs + stringArray
               cellUserURLs = stringArray
               
+              print(stringArray)
+              
               for cellName in cellUserURLs {
                   let separatingStringURL = cellName.components(separatedBy: "/")
                   
@@ -173,7 +175,11 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             }
         }
         
-        userDefaults.set(cellUserURLs, forKey: "cellURLs")
+        userDefaults.set([String](cellUserURLs), forKey: "cellURLs")
+        
+        if (cellUserURLs.count == 0) {
+            userDefaults.set([String](), forKey: "cellURLs")
+        }
         
         self.tableOfDicom.deleteRows(at: [indexPath], with: .automatic)
         self.tableOfDicom.reloadData()
@@ -212,11 +218,6 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     func selectFiles() {
-//        let types = UTType.types(tag: "jpg",
-//                                 tagClass: UTTagClass.filenameExtension,
-//                                 conformingTo: nil)
-//
-        
         let documentPickerController = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypesOfFiles)
         documentPickerController.delegate = self
         self.present(documentPickerController, animated: true, completion: nil)
@@ -234,13 +235,23 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         cellURLs.append(stringURL)
         cellUserURLs.append(stringURL)
         
-        print(cellUserURLs)
-        
-        userDefaults.setValue(cellUserURLs, forKey: "cellURLs")
+        userDefaults.setValue([String](cellUserURLs), forKey: "cellURLs")
         
         // Add in array
         tableOfDicom.reloadData()
     }
+    
+//    guard let data = UserDefaults.standard.data(forKey: "UserInformation") else {
+//        // no data associated with the key!
+//    }
+//    guard var obj = try? PropertyListDecoder().decode(User.self, from: data) else {
+//        // something wrong happened with decoding
+//    }
+//    obj.age = 32 // changing the object...
+//    guard let newData = try? PropertyListEncoder().encode(obj) else {
+//        // something wrong happened with encoding
+//    }
+//    UserDefaults.standard.set(newData, forKey: "UserInformation")
     
   private func setupLocalization() {
 
