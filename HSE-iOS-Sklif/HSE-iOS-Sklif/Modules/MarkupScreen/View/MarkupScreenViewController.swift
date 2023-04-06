@@ -6,6 +6,7 @@ protocol MarkupScreenViewInput: AnyObject {
 
 protocol MarkupScreenViewOutput: AnyObject {
   func viewDidLoad()
+    var listOfPhotos: [String] { get }
 }
 
 
@@ -22,7 +23,6 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     private var imageView: UIImageView!
     private var sliderForPhoto = UISlider()
     
-    private var listOfPhotos = [String]()
 
   // MARK: - UIViewController
 
@@ -30,9 +30,15 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     super.viewDidLoad()
     output?.viewDidLoad()
     
+      self.navigationController?.navigationBar.backgroundColor = .black
+//      self.navigationController?.navigationBar.tintColor = .black
+//      self.navigationController?.navigationBar.barStyle = .black
+      self.navigationController?.navigationBar.barTintColor = UIColor.black
+//      self.navigationController?.navigationBar.tintColor = .black
+
     view.backgroundColor = .black
     
-    listOfPhotos = ["file:///Users/sergeyabrosov/Library/Developer/CoreSimulator/Devices/CBB4E03E-4E64-418D-8926-87044F5C200A/data/Containers/Shared/AppGroup/EFA30EB2-323E-4CED-A605-191AF1F17C6D/File%20Provider%20Storage/%D0%97%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/njashnye-kotiki4%202", "11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
+//    listOfPhotos = ["file:///Users/sergeyabrosov/Library/Developer/CoreSimulator/Devices/CBB4E03E-4E64-418D-8926-87044F5C200A/data/Containers/Shared/AppGroup/EFA30EB2-323E-4CED-A605-191AF1F17C6D/File%20Provider%20Storage/%D0%97%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/njashnye-kotiki4%202", "11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
     
     setupUI()
   }
@@ -57,7 +63,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         
         imageScrollView.translatesAutoresizingMaskIntoConstraints = false
         imageScrollView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(63)
+            make.top.equalToSuperview().inset(100)
             make.left.equalToSuperview().inset(7)
             make.right.equalToSuperview().inset(7)
             make.bottom.equalToSuperview().inset(100)
@@ -102,13 +108,14 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView.isUserInteractionEnabled = true
         imageView.center = imageScrollView.center
     
-        imageScrollView.contentSize = testImage.size
+        //imageScrollView.contentSize = testImage.size
         
 //        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
 //        imageView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     internal func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        self.navigationController?.navigationBar.barTintColor = UIColor.black
         return self.imageView
     }
     
@@ -134,7 +141,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         sliderForPhoto.thumbTintColor = UIColor(red: 47, green: 47, blue: 50)
         sliderForPhoto.tintColor = UIColor(red: 25, green: 25, blue: 140)
         sliderForPhoto.minimumValue = 0
-        sliderForPhoto.maximumValue = Float(listOfPhotos.count - 1)
+        sliderForPhoto.maximumValue = Float((output?.listOfPhotos.count)! - 1)
         sliderForPhoto.value = 1
         sliderForPhoto.tag = 1
 
@@ -145,7 +152,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         var currentValue = Int(sender.value)
 //        var sliderRow = sender.tag
         
-        self.imageView.image = UIImage(named: listOfPhotos[currentValue])
+        self.imageView.image = UIImage(named: (output?.listOfPhotos[currentValue])!)
     }
     
   private func setupLocalization() {
