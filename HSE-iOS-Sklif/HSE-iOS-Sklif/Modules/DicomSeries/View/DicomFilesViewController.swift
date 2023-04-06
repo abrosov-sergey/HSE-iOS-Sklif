@@ -24,9 +24,9 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
   private var tableOfDicom = UITableView()
   private let cellIndentifire = "Dicom"
   private var cellsInfo = ["Тестовый снимок", "Тестовая серия снимков"]
-  private var cellTestURLs = ["11", "22"]
-  private var cellURLs = [""]
-  private var cellUserURLs = [""]
+  private var cellTestURLs = [String : [String]]()
+  private var cellURLs = [String : [String]]()
+  private var cellUserURLs = [String : [String]]()
   private var countOfDeletingTestCells = 0
     
   private var addButton = UIButton()
@@ -43,6 +43,9 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
   override func viewDidLoad() {
     super.viewDidLoad()
     output?.viewDidLoad()
+      
+    cellTestURLs["0"] = ["22"]
+    cellTestURLs["1"] = ["11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
     
     setupUI()
   }
@@ -55,26 +58,26 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
   private func setupUI() {
       view.backgroundColor = .black
       
-      switch userDefaults.value(forKey: "cellURLs") {
-      case let stringArray as [String]:
+      let jsonDecoder = JSONDecoder()
+      let stringArray1 = try? jsonDecoder.decode([String : [String]].self, from: userDefaults.value(forKey: "cellURLs") as! Data)
+      
+      switch stringArray1 {
+      case let stringArray as [String : [String]]:
           if stringArray.count > 0 {
-              cellURLs = cellTestURLs + stringArray
+              cellURLs = cellTestURLs
+              cellURLs = cellURLs.merging(stringArray) { (current, _) in current }
               cellUserURLs = stringArray
               
-              print(stringArray)
-              
               for cellName in cellUserURLs {
-                  let separatingStringURL = cellName.components(separatedBy: "/")
+                  let separatingStringURL = cellName.value[0].components(separatedBy: "/")
                   
                   cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
               }
           } else {
               cellURLs = cellTestURLs
-              cellUserURLs = [String]()
           }
       default:
           cellURLs = cellTestURLs
-          cellUserURLs = [String]()
       }
       
       countOfDeletingTestCells = 0
@@ -160,10 +163,10 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
     private func handleMoveToTrash(indexPath: IndexPath) {
         self.cellsInfo.remove(at: indexPath.row)
-        self.cellURLs.remove(at: indexPath.row)
+        self.cellURLs.removeValue(forKey: "\(indexPath.row)")
         
         if indexPath.row >= (2 - countOfDeletingTestCells) {
-            self.cellUserURLs.remove(at: indexPath.row - 2 + countOfDeletingTestCells)
+            self.cellUserURLs.removeValue(forKey: "\(indexPath.row - 2 + countOfDeletingTestCells)")
         }
         
         if indexPath.row == 0 || indexPath.row == 1 {
@@ -176,11 +179,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             }
         }
         
-        userDefaults.set([String](cellUserURLs), forKey: "cellURLs")
-        
-        if (cellUserURLs.count == 0) {
-            userDefaults.set([String](), forKey: "cellURLs")
-        }
+        let jsonData = try? JSONSerialization.data(withJSONObject: cellUserURLs)
+        userDefaults.set(jsonData, forKey: "cellURLs")
         
         self.tableOfDicom.deleteRows(at: [indexPath], with: .automatic)
         self.tableOfDicom.reloadData()
@@ -193,9 +193,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        print("here1")
-        output?.cellDidPressed(arrayOfPhotos: [cellURLs[indexPath.row]])
+    
+        output?.cellDidPressed(arrayOfPhotos: cellURLs["\(indexPath.row)"]!)
     }
 
     private func setupButton() {
@@ -236,10 +235,24 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         let separatingStringURL = stringURL.components(separatedBy: "/")
         
         cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
-        cellURLs.append(stringURL)
-        cellUserURLs.append(stringURL)
         
-        userDefaults.setValue([String](cellUserURLs), forKey: "cellURLs")
+        let count1 = Int(cellURLs.count)
+        cellURLs["\(count1)"] = [stringURL]
+
+        if !cellUserURLs.isEmpty {
+            print("here1")
+
+            let count2 = cellUserURLs.count
+            cellUserURLs["\(count2)"] = [stringURL]
+        } else {
+            print("here2")
+            
+            cellUserURLs["0"] = [stringURL]
+        }
+        
+        let jsonData = try? JSONSerialization.data(withJSONObject: cellUserURLs)
+        userDefaults.set(jsonData, forKey: "cellURLs")
+//        UserDefaults.standard.setValue(cellUserURLs, forKey: "cellURLs")
         
         // Add in array
         tableOfDicom.reloadData()

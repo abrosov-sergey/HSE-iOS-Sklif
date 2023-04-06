@@ -31,14 +31,9 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     output?.viewDidLoad()
     
       self.navigationController?.navigationBar.backgroundColor = .black
-//      self.navigationController?.navigationBar.tintColor = .black
-//      self.navigationController?.navigationBar.barStyle = .black
       self.navigationController?.navigationBar.barTintColor = UIColor.black
-//      self.navigationController?.navigationBar.tintColor = .black
 
     view.backgroundColor = .black
-    
-//    listOfPhotos = ["file:///Users/sergeyabrosov/Library/Developer/CoreSimulator/Devices/CBB4E03E-4E64-418D-8926-87044F5C200A/data/Containers/Shared/AppGroup/EFA30EB2-323E-4CED-A605-191AF1F17C6D/File%20Provider%20Storage/%D0%97%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/njashnye-kotiki4%202", "11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
     
     setupUI()
   }
@@ -71,7 +66,6 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
 
         imageScrollView.isPagingEnabled = true
         imageScrollView.layer.cornerRadius = 15
-//        imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
         imageScrollView.backgroundColor = .black
         imageScrollView.decelerationRate = UIScrollView.DecelerationRate.normal
         imageScrollView.alwaysBounceVertical = false
@@ -146,7 +140,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         sliderForPhoto.tintColor = UIColor(red: 25, green: 25, blue: 140)
         sliderForPhoto.minimumValue = 0
         sliderForPhoto.maximumValue = Float((output?.listOfPhotos.count)! - 1)
-        sliderForPhoto.value = 1
+        sliderForPhoto.value = 0
         sliderForPhoto.tag = 1
         
         if (Int((output?.listOfPhotos.count)!) == 1) {
