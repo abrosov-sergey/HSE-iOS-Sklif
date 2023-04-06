@@ -6,7 +6,7 @@ protocol MarkupScreenViewInput: AnyObject {
 
 protocol MarkupScreenViewOutput: AnyObject {
   func viewDidLoad()
-    var listOfPhotos: [String] { get }
+  var listOfPhotos: [String] { get }
 }
 
 
@@ -89,7 +89,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView?.removeFromSuperview()
         imageView = nil
         
-        let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")!
+        let testImage = UIImage(named: (output?.listOfPhotos[0])!)
         imageView = UIImageView()
         
         self.imageScrollView.addSubview(imageView)
@@ -100,12 +100,16 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.top.left.right.equalToSuperview()
         }
         
-        imageView.image = testImage
+//        imageView.contentScaleFactor = 0.5
+//        imageView.scalesLargeContentImage = false
         imageView.layer.cornerRadius = 11.0
         imageView.clipsToBounds = false
         imageView.backgroundColor = .black
-        imageView.contentMode = .center
+//        imageView.contentMode = .center
+//        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = true
+        imageView.image = testImage
         imageView.center = imageScrollView.center
     
         //imageScrollView.contentSize = testImage.size
@@ -144,7 +148,11 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         sliderForPhoto.maximumValue = Float((output?.listOfPhotos.count)! - 1)
         sliderForPhoto.value = 1
         sliderForPhoto.tag = 1
-
+        
+        if (Int((output?.listOfPhotos.count)!) == 1) {
+            sliderForPhoto.isHidden = true
+        }
+        
         sliderForPhoto.addTarget(self, action: #selector(sliderValueChange(sender:)), for: .valueChanged)
     }
     

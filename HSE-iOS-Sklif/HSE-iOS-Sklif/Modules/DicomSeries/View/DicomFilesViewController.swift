@@ -24,7 +24,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
   private var tableOfDicom = UITableView()
   private let cellIndentifire = "Dicom"
   private var cellsInfo = ["Тестовый снимок", "Тестовая серия снимков"]
-  private var cellTestURLs = ["telegram-cloud-photo-size-2-5431460014284979770-y 1", "telegram-cloud-photo-size-2-5431460014284979770-y 1"]
+  private var cellTestURLs = ["11", "22"]
   private var cellURLs = [""]
   private var cellUserURLs = [""]
   private var countOfDeletingTestCells = 0
