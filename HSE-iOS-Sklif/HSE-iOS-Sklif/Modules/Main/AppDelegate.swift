@@ -10,8 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
 
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = DicomFilesViewController()
-//        window?.rootViewController = MarkupScreenViewController()
+        window?.rootViewController = UINavigationController(rootViewController: DicomFilesModuleConfigurator().configure().view)
         window?.makeKeyAndVisible()
 
         return true

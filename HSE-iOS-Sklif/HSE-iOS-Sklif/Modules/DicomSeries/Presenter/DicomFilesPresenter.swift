@@ -26,6 +26,11 @@ final class DicomFilesPresenter {
 // MARK: - DicomFilesViewOutput
 
 extension DicomFilesPresenter: DicomFilesViewOutput {
+    func cellDidPressed(arrayOfPhotos: [String]) {
+        print("here2")
+        router?.showMakupScreen(arrayOfPhotos: arrayOfPhotos)
+    }
+    
 
   func viewDidLoad() {
 

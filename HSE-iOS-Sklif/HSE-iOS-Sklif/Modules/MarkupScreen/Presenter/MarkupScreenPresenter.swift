@@ -1,5 +1,5 @@
 protocol MarkupScreenModuleInput: AnyObject {
-
+    func cellDidPressed(arrayOfPhotos: [String])
 }
 
 protocol MarkupScreenModuleOutput: AnyObject {
@@ -9,6 +9,8 @@ protocol MarkupScreenModuleOutput: AnyObject {
 final class MarkupScreenPresenter {
 
   // MARK: - Properties
+    
+  var listOfPhotos = [String]()
 
   weak var view: MarkupScreenViewInput?
   var router: MarkupScreenRouterInput?
@@ -27,5 +29,9 @@ extension MarkupScreenPresenter: MarkupScreenViewOutput {
 // MARK: - MarkupScreenInput
 
 extension MarkupScreenPresenter: MarkupScreenModuleInput {
+    func cellDidPressed(arrayOfPhotos: [String]) {
+        listOfPhotos = arrayOfPhotos
+    }
+    
 
 }

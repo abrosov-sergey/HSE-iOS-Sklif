@@ -9,6 +9,7 @@ protocol DicomFilesViewInput: AnyObject {
 
 protocol DicomFilesViewOutput: AnyObject {
   func viewDidLoad()
+  func cellDidPressed(arrayOfPhotos: [String])
 }
 
 
@@ -192,6 +193,9 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        print("here1")
+        output?.cellDidPressed(arrayOfPhotos: [cellURLs[indexPath.row]])
     }
 
     private func setupButton() {
