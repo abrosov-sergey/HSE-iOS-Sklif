@@ -6,7 +6,7 @@ protocol MarkupScreenViewInput: AnyObject {
 
 protocol MarkupScreenViewOutput: AnyObject {
   func viewDidLoad()
-    var listOfPhotos: [String] { get }
+  var listOfPhotos: [String] { get }
 }
 
 
@@ -31,14 +31,9 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     output?.viewDidLoad()
     
       self.navigationController?.navigationBar.backgroundColor = .black
-//      self.navigationController?.navigationBar.tintColor = .black
-//      self.navigationController?.navigationBar.barStyle = .black
       self.navigationController?.navigationBar.barTintColor = UIColor.black
-//      self.navigationController?.navigationBar.tintColor = .black
 
     view.backgroundColor = .black
-    
-//    listOfPhotos = ["file:///Users/sergeyabrosov/Library/Developer/CoreSimulator/Devices/CBB4E03E-4E64-418D-8926-87044F5C200A/data/Containers/Shared/AppGroup/EFA30EB2-323E-4CED-A605-191AF1F17C6D/File%20Provider%20Storage/%D0%97%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B8/njashnye-kotiki4%202", "11", "22", "33", "44", "11", "22", "33", "44", "11", "22", "33"]
     
     setupUI()
   }
@@ -71,7 +66,6 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
 
         imageScrollView.isPagingEnabled = true
         imageScrollView.layer.cornerRadius = 15
-//        imageScrollView.backgroundColor = UIColor(red: 37, green: 37, blue: 40)
         imageScrollView.backgroundColor = .black
         imageScrollView.decelerationRate = UIScrollView.DecelerationRate.normal
         imageScrollView.alwaysBounceVertical = false
@@ -89,7 +83,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView?.removeFromSuperview()
         imageView = nil
         
-        let testImage = UIImage(named: "telegram-cloud-photo-size-2-5431460014284979770-y 1")!
+        let testImage = UIImage(named: (output?.listOfPhotos[0])!)
         imageView = UIImageView()
         
         self.imageScrollView.addSubview(imageView)
@@ -100,12 +94,16 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.top.left.right.equalToSuperview()
         }
         
-        imageView.image = testImage
+//        imageView.contentScaleFactor = 0.5
+//        imageView.scalesLargeContentImage = false
         imageView.layer.cornerRadius = 11.0
         imageView.clipsToBounds = false
         imageView.backgroundColor = .black
-        imageView.contentMode = .center
+//        imageView.contentMode = .center
+//        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = true
+        imageView.image = testImage
         imageView.center = imageScrollView.center
     
         //imageScrollView.contentSize = testImage.size
@@ -142,9 +140,13 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         sliderForPhoto.tintColor = UIColor(red: 25, green: 25, blue: 140)
         sliderForPhoto.minimumValue = 0
         sliderForPhoto.maximumValue = Float((output?.listOfPhotos.count)! - 1)
-        sliderForPhoto.value = 1
+        sliderForPhoto.value = 0
         sliderForPhoto.tag = 1
-
+        
+        if (Int((output?.listOfPhotos.count)!) == 1) {
+            sliderForPhoto.isHidden = true
+        }
+        
         sliderForPhoto.addTarget(self, action: #selector(sliderValueChange(sender:)), for: .valueChanged)
     }
     
