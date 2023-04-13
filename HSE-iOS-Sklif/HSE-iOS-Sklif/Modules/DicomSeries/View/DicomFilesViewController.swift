@@ -254,6 +254,12 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             var sourceURL = myURL
             var destinationURL = "file:/"
             
+            print(sourceURL)
+            sourceURL.deletingLastPathComponent()
+            print(sourceURL)
+            sourceURL.appendingPathComponent("p")
+            print(sourceURL)
+            
             sourceURL.startAccessingSecurityScopedResource()
             URL(string: destinationURL)!.startAccessingSecurityScopedResource()
             
@@ -264,12 +270,13 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
                 }
             }
 //            destinationURL += "/NewDirectory"
-            
+
             let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
             let documentsDirectory = paths[0]
             let docURL = URL(string: documentsDirectory)!
-            let dataPath = docURL.appendingPathComponent("MyFolder1")
+            let dataPath = docURL.appendingPathComponent("MyFolder2")
             
+            dataPath.startAccessingSecurityScopedResource()
             print(docURL)
             print(dataPath)
             
@@ -286,8 +293,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
                 print(sourceURL)
                 print(destinationURL)
                 
-//                try fileManager.createDirectory(atPath: destinationURL, withIntermediateDirectories: true)
-                try fileManager.unzipItem(at: sourceURL, to: dataPath)
+                try fileManager.unzipItem(at: URL(fileURLWithPath: "\(sourceURL)"), to: dataPath)
             } catch {
                 print("Extraction of ZIP archive failed with error:\(error)")
             }
@@ -326,6 +332,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             
             sourceURL.stopAccessingSecurityScopedResource()
             URL(string: destinationURL)!.stopAccessingSecurityScopedResource()
+            dataPath.stopAccessingSecurityScopedResource()
         } else {
             let count1 = Int(cellURLs.count)
             cellURLs["\(count1)"] = [stringURL]
