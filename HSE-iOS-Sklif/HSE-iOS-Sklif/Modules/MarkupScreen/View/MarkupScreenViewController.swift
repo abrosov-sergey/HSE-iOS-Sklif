@@ -83,7 +83,21 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView?.removeFromSuperview()
         imageView = nil
         
-        let testImage = UIImage(named: (output?.listOfPhotos[0])!)
+        print((output?.listOfPhotos[0])!)
+        
+        var testImage = UIImage()
+        
+        if (output?.listOfPhotos[0])!.count == 2 {
+            testImage = UIImage(named: (output?.listOfPhotos[0])!)!
+        } else {
+            let urlImage = URL(string: (output?.listOfPhotos[0])!)!
+            
+            urlImage.startAccessingSecurityScopedResource()
+            let imageData = try! Data(contentsOf: URL(string: (output?.listOfPhotos[0])!)!)
+            testImage = UIImage(data: imageData)!
+            urlImage.stopAccessingSecurityScopedResource()
+        }
+        
         imageView = UIImageView()
         
         self.imageScrollView.addSubview(imageView)
@@ -94,22 +108,13 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.top.left.right.equalToSuperview()
         }
         
-//        imageView.contentScaleFactor = 0.5
-//        imageView.scalesLargeContentImage = false
         imageView.layer.cornerRadius = 11.0
         imageView.clipsToBounds = false
         imageView.backgroundColor = .black
-//        imageView.contentMode = .center
-//        imageView.contentMode = .scaleAspectFill
         imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = true
         imageView.image = testImage
         imageView.center = imageScrollView.center
-    
-        //imageScrollView.contentSize = testImage.size
-        
-//        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
-//        imageView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     internal func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -120,11 +125,6 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         //
     }
-    
-//    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
-//        let tappedImage = tapGestureRecognizer.view as! UIImageView
-//        // Your action
-//    }
 
     private func setupSlider() {
         self.view.addSubview(sliderForPhoto)
@@ -152,9 +152,23 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     
     @objc func sliderValueChange(sender: UISlider) {
         var currentValue = Int(sender.value)
-//        var sliderRow = sender.tag
         
-        self.imageView.image = UIImage(named: (output?.listOfPhotos[currentValue])!)
+        print((output?.listOfPhotos[currentValue])!)
+        
+        var testImage = UIImage()
+        
+        if (output?.listOfPhotos[currentValue])!.count == 2 {
+            testImage = UIImage(named: (output?.listOfPhotos[currentValue])!)!
+        } else {
+            let urlImage = URL(string: (output?.listOfPhotos[currentValue])!)!
+            
+            urlImage.startAccessingSecurityScopedResource()
+            let imageData = try! Data(contentsOf: URL(string: (output?.listOfPhotos[currentValue])!)!)
+            testImage = UIImage(data: imageData)!
+            urlImage.stopAccessingSecurityScopedResource()
+        }
+        
+        self.imageView.image = testImage
     }
     
   private func setupLocalization() {

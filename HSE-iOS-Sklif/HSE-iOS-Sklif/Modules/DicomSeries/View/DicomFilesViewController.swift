@@ -2,6 +2,7 @@ import UIKit
 import SnapKit
 import UniformTypeIdentifiers
 import MobileCoreServices
+import ZIPFoundation
 
 protocol DicomFilesViewInput: AnyObject {
 
@@ -31,7 +32,9 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
     
   private var addButton = UIButton()
     
-  private let supportedTypesOfFiles = [UTType.image, UTType.text, UTType.plainText, UTType.utf8PlainText,    UTType.utf16ExternalPlainText, UTType.utf16PlainText, UTType.delimitedText, UTType.commaSeparatedText,    UTType.tabSeparatedText, UTType.utf8TabSeparatedText, UTType.rtf, UTType.pdf, UTType.webArchive, UTType.image, UTType.jpeg, UTType.tiff, UTType.gif, UTType.png, UTType.bmp, UTType.ico, UTType.rawImage, UTType.svg, UTType.livePhoto, UTType.movie, UTType.video, UTType.audio, UTType.quickTimeMovie, UTType.mpeg,    UTType.mpeg2Video, UTType.mpeg2TransportStream, UTType.mp3, UTType.mpeg4Movie, UTType.mpeg4Audio, UTType.avi, UTType.aiff, UTType.wav, UTType.midi, UTType.archive, UTType.gzip, UTType.bz2, UTType.zip, UTType.appleArchive, UTType.spreadsheet, UTType.epub]
+//  private let supportedTypesOfFiles = [UTType.image, UTType.text, UTType.plainText, UTType.utf8PlainText,    UTType.utf16ExternalPlainText, UTType.utf16PlainText, UTType.delimitedText, UTType.commaSeparatedText,    UTType.tabSeparatedText, UTType.utf8TabSeparatedText, UTType.rtf, UTType.pdf, UTType.webArchive, UTType.image, UTType.jpeg, UTType.tiff, UTType.gif, UTType.png, UTType.bmp, UTType.ico, UTType.rawImage, UTType.svg, UTType.livePhoto, UTType.movie, UTType.video, UTType.audio, UTType.quickTimeMovie, UTType.mpeg,    UTType.mpeg2Video, UTType.mpeg2TransportStream, UTType.mp3, UTType.mpeg4Movie, UTType.mpeg4Audio, UTType.avi, UTType.aiff, UTType.wav, UTType.midi, UTType.archive, UTType.gzip, UTType.bz2, UTType.zip, UTType.appleArchive, UTType.spreadsheet, UTType.epub]
+    
+    private let supportedTypesOfFiles = [UTType.image, UTType.image, UTType.jpeg, UTType.png,  UTType.rawImage, UTType.svg, UTType.video, UTType.avi, UTType.archive, UTType.gzip, UTType.zip]
 
     
   private let userDefaults = UserDefaults()
@@ -58,8 +61,11 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
   private func setupUI() {
       view.backgroundColor = .black
       
+//      userDefaults.setValue("", forKey: "cellURLs")
+      
       let jsonDecoder = JSONDecoder()
       let stringArray1 = try? jsonDecoder.decode([String : [String]].self, from: userDefaults.value(forKey: "cellURLs") as! Data)
+//      let stringArray1 = [String : [String]]()
       
       switch stringArray1 {
       case let stringArray as [String : [String]]:
@@ -69,9 +75,13 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
               cellUserURLs = stringArray
               
               for cellName in cellUserURLs {
-                  let separatingStringURL = cellName.value[0].components(separatedBy: "/")
-                  
-                  cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
+                  if cellName.value.count >= 1 {
+                      let separatingStringURL = cellName.value[0].components(separatedBy: "/")
+                      
+                      cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
+                  } else {
+                      cellsInfo.append("Ваша серия: " + "пусто")
+                  }
               }
           } else {
               cellURLs = cellTestURLs
@@ -231,44 +241,115 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             return
         }
         
+        myURL.startAccessingSecurityScopedResource()
+        
         let stringURL = "\(myURL)"
         let separatingStringURL = stringURL.components(separatedBy: "/")
         
         cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
         
-        let count1 = Int(cellURLs.count)
-        cellURLs["\(count1)"] = [stringURL]
-
-        if !cellUserURLs.isEmpty {
-            print("here1")
-
-            let count2 = cellUserURLs.count
-            cellUserURLs["\(count2)"] = [stringURL]
-        } else {
-            print("here2")
+        if stringURL.contains(".zip") {
+            let fileManager = FileManager()
+        
+            var sourceURL = myURL
+            var destinationURL = "file:/"
             
-            cellUserURLs["0"] = [stringURL]
+            sourceURL.startAccessingSecurityScopedResource()
+            URL(string: destinationURL)!.startAccessingSecurityScopedResource()
+            
+            for i in 1..<(separatingStringURL.count - 1) {
+                destinationURL += separatingStringURL[i]
+                if i != separatingStringURL.count - 2 {
+                    destinationURL += "/"
+                }
+            }
+//            destinationURL += "/NewDirectory"
+            
+            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+            let documentsDirectory = paths[0]
+            let docURL = URL(string: documentsDirectory)!
+            let dataPath = docURL.appendingPathComponent("MyFolder1")
+            
+            print(docURL)
+            print(dataPath)
+            
+            if !FileManager.default.fileExists(atPath: dataPath.path) {
+                do {
+                    try FileManager.default.createDirectory(atPath: dataPath.path, withIntermediateDirectories: true, attributes: nil)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            do {
+                
+                print(sourceURL)
+                print(destinationURL)
+                
+//                try fileManager.createDirectory(atPath: destinationURL, withIntermediateDirectories: true)
+                try fileManager.unzipItem(at: sourceURL, to: dataPath)
+            } catch {
+                print("Extraction of ZIP archive failed with error:\(error)")
+            }
+            
+            var newUrls: [String] = []
+            
+            do {
+                let fileManager = FileManager.default
+                
+                do {
+                    let fileURLs = try fileManager.contentsOfDirectory(atPath: "\(dataPath)")
+                    
+                    newUrls = fileURLs
+                    
+                    print(fileURLs)
+                } catch {
+                    print("Error while enumerating files")
+                }
+            } catch {
+                print(error)
+            }
+            
+            let count1 = Int(cellURLs.count)
+            cellURLs["\(count1)"] = newUrls
+
+            if !cellUserURLs.isEmpty {
+                print("here1")
+
+                let count2 = cellUserURLs.count
+                cellUserURLs["\(count2)"] = newUrls
+            } else {
+                print("here2")
+                
+                cellUserURLs["0"] = newUrls
+            }
+            
+            sourceURL.stopAccessingSecurityScopedResource()
+            URL(string: destinationURL)!.stopAccessingSecurityScopedResource()
+        } else {
+            let count1 = Int(cellURLs.count)
+            cellURLs["\(count1)"] = [stringURL]
+
+            if !cellUserURLs.isEmpty {
+                print("here1")
+
+                let count2 = cellUserURLs.count
+                cellUserURLs["\(count2)"] = [stringURL]
+            } else {
+                print("here2")
+                
+                cellUserURLs["0"] = [stringURL]
+            }
         }
         
         let jsonData = try? JSONSerialization.data(withJSONObject: cellUserURLs)
         userDefaults.set(jsonData, forKey: "cellURLs")
-//        UserDefaults.standard.setValue(cellUserURLs, forKey: "cellURLs")
         
         // Add in array
         tableOfDicom.reloadData()
+        
+        myURL.stopAccessingSecurityScopedResource()
     }
-    
-//    guard let data = UserDefaults.standard.data(forKey: "UserInformation") else {
-//        // no data associated with the key!
-//    }
-//    guard var obj = try? PropertyListDecoder().decode(User.self, from: data) else {
-//        // something wrong happened with decoding
-//    }
-//    obj.age = 32 // changing the object...
-//    guard let newData = try? PropertyListEncoder().encode(obj) else {
-//        // something wrong happened with encoding
-//    }
-//    UserDefaults.standard.set(newData, forKey: "UserInformation")
     
   private func setupLocalization() {
 
