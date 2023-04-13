@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		631AC9A229E2D594007924E2 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 631AC9A129E2D594007924E2 /* ZIPFoundation */; };
 		6379293C29D06A78007667EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6379293B29D06A78007667EE /* AppDelegate.swift */; };
 		6379294029D06A78007667EE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6379293F29D06A78007667EE /* ViewController.swift */; };
 		6379294529D06A7B007667EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6379294429D06A7B007667EE /* Assets.xcassets */; };
@@ -49,6 +50,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6379295129D0780E007667EE /* SnapKit in Frameworks */,
+				631AC9A229E2D594007924E2 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +217,7 @@
 			name = "HSE-iOS-Sklif";
 			packageProductDependencies = (
 				6379295029D0780E007667EE /* SnapKit */,
+				631AC9A129E2D594007924E2 /* ZIPFoundation */,
 			);
 			productName = "HSE-iOS-Sklif";
 			productReference = 6379293829D06A78007667EE /* HSE-iOS-Sklif.app */;
@@ -246,6 +249,7 @@
 			mainGroup = 6379292F29D06A78007667EE;
 			packageReferences = (
 				6379294F29D0780E007667EE /* XCRemoteSwiftPackageReference "SnapKit" */,
+				631AC9A029E2D594007924E2 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			productRefGroup = 6379293929D06A78007667EE /* Products */;
 			projectDirPath = "";
@@ -494,6 +498,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		631AC9A029E2D594007924E2 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.9;
+			};
+		};
 		6379294F29D0780E007667EE /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
@@ -505,6 +517,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		631AC9A129E2D594007924E2 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 631AC9A029E2D594007924E2 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
 		6379295029D0780E007667EE /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6379294F29D0780E007667EE /* XCRemoteSwiftPackageReference "SnapKit" */;
