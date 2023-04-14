@@ -64,8 +64,8 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
 //      userDefaults.setValue("", forKey: "cellURLs")
       
       let jsonDecoder = JSONDecoder()
-      let stringArray1 = try? jsonDecoder.decode([String : [String]].self, from: userDefaults.value(forKey: "cellURLs") as! Data)
-//      let stringArray1 = [String : [String]]()
+//      let stringArray1 = try? jsonDecoder.decode([String : [String]].self, from: userDefaults.value(forKey: "cellURLs") as! Data)
+      let stringArray1 = [String : [String]]()
       
       switch stringArray1 {
       case let stringArray as [String : [String]]:
@@ -248,7 +248,7 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
         
         cellsInfo.append("Ваша серия: " + separatingStringURL[separatingStringURL.count - 1])
         
-        if stringURL.contains(".zip") {
+        if 1 == 0 {
             let fileManager = FileManager()
         
             var sourceURL = myURL

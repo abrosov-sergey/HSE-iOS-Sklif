@@ -113,8 +113,49 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView.backgroundColor = .black
         imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = true
+        testImage = drawOnImage(testImage)
         imageView.image = testImage
         imageView.center = imageScrollView.center
+    }
+    
+    func drawOnImage(_ image: UIImage) -> UIImage {
+         // Create a context of the starting image size and set it as the current one
+         UIGraphicsBeginImageContext(image.size)
+        
+         // Draw the starting image in the current context as background
+         image.draw(at: CGPoint.zero)
+        
+         // Get the current context
+         let context = UIGraphicsGetCurrentContext()!
+        
+         // Draw a red line
+        context.setLineWidth(0.5)
+         context.setStrokeColor(UIColor.red.cgColor)
+
+        for i in 1...10 {
+            let xCoordinate = CGFloat(i) * (image.size.width / 10), yCoordinate = image.size.height
+            
+            context.move(to: CGPoint(x: xCoordinate, y: 0))
+            context.addLine(to: CGPoint(x: xCoordinate, y: yCoordinate))
+            
+            context.strokePath()
+        }
+        
+        for i in 1...10 {
+            let xCoordinate = image.size.width, yCoordinate = CGFloat(i) * (image.size.height / 10)
+            
+            context.move(to: CGPoint(x: 0, y: yCoordinate))
+            context.addLine(to: CGPoint(x: xCoordinate, y: yCoordinate))
+            
+            context.strokePath()
+        }
+        
+         // Save the context as a new UIImage
+         let myImage = UIGraphicsGetImageFromCurrentImageContext()
+         UIGraphicsEndImageContext()
+        
+         // Return modified image
+         return myImage!
     }
     
     internal func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -167,6 +208,8 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             testImage = UIImage(data: imageData)!
             urlImage.stopAccessingSecurityScopedResource()
         }
+        
+        testImage = drawOnImage(testImage)
         
         self.imageView.image = testImage
     }
