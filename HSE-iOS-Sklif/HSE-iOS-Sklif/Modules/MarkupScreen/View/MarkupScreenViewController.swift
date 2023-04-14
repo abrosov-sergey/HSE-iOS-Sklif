@@ -9,6 +9,55 @@ protocol MarkupScreenViewOutput: AnyObject {
   var listOfPhotos: [String] { get }
 }
 
+final class Canvas: UIView {
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        
+        UIGraphicsBeginImageContext(self.frame.size)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        if let image = image {
+            self.backgroundColor = UIColor(patternImage: image)
+        }
+        
+        context.setStrokeColor(red: 0, green: 1, blue: 0, alpha: 1)
+        context.setLineWidth(3)
+        context.setLineCap(.butt)
+        
+        lines.forEach { (line) in
+            for (i, p) in line.enumerated() {
+                if i == 0 {
+                    context.move(to: p)
+                } else {
+                    context.addLine(to: p)
+                }
+            }
+        }
+        
+        context.strokePath()
+    }
+    
+//    var line = [CGPoint]()
+    
+    var lines = [[CGPoint]]()
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        lines.append([CGPoint]())
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let point = touches.first?.location(in: nil) else { return }
+        
+        guard var lastLine = lines.popLast() else { return }
+        lastLine.append(point)
+        
+        lines.append(lastLine)
+        
+        setNeedsDisplay()
+    }
+}
 
 final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
 
@@ -20,9 +69,23 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
   var output: MarkupScreenViewOutput?
     
     private var imageScrollView = UIScrollView()
+    private var canvasView = Canvas()
     private var imageView: UIImageView!
     private var sliderForPhoto = UISlider()
     
+    private var undoButton: UIButton = {
+        var button = UIButton(type: .system)
+        button.setTitle("Назад", for: .normal)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 14)
+        return button
+    }()
+    
+    private var clearButton: UIButton = {
+        var button = UIButton(type: .system)
+        button.setTitle("Очистить", for: .normal)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 14)
+        return button
+    }()
 
   // MARK: - UIViewController
 
@@ -46,7 +109,9 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
   private func setupUI() {
       createScrollView()
       addTestImage()
+      setupCanvasView()
       setupSlider()
+      setupButtons()
   }
 
     private func createScrollView() {
@@ -77,6 +142,27 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageScrollView.maximumZoomScale = 5.0
         imageScrollView.layer.borderColor = CGColor(red: 0.1, green: 0.1, blue: 0.55, alpha: 1)
         imageScrollView.layer.borderWidth = 2.5
+    }
+    
+    private func setupCanvasView() {
+        self.imageView.addSubview(canvasView)
+        self.imageView.bringSubviewToFront(canvasView)
+        
+        canvasView.backgroundColor = .black
+        canvasView.contentMode = .scaleAspectFit
+        canvasView.isUserInteractionEnabled = true
+        canvasView.clipsToBounds = false
+        
+        canvasView.translatesAutoresizingMaskIntoConstraints = false
+        canvasView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.top.equalToSuperview()
+            make.left.equalToSuperview()
+            make.right.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
+        
+        canvasView.draw(CGRect())
     }
     
     private func addTestImage() {
@@ -118,6 +204,16 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         imageView.center = imageScrollView.center
     }
     
+    private func setupButtons() {
+        undoButton.translatesAutoresizingMaskIntoConstraints = false
+        undoButton.snp.makeConstraints { make in
+            make.left.equalToSuperview().inset(14)
+            make.left.equalToSuperview().inset(14)
+        }
+        
+        clearButton
+    }
+    
     func drawOnImage(_ image: UIImage) -> UIImage {
          // Create a context of the starting image size and set it as the current one
          UIGraphicsBeginImageContext(image.size)
@@ -129,7 +225,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
          let context = UIGraphicsGetCurrentContext()!
         
          // Draw a red line
-        context.setLineWidth(0.5)
+        context.setLineWidth(0.25)
          context.setStrokeColor(UIColor.red.cgColor)
 
         for i in 1...10 {
