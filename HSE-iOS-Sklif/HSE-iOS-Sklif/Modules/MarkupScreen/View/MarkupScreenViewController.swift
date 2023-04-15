@@ -97,7 +97,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
       self.navigationController?.navigationBar.barTintColor = UIColor.black
 
     view.backgroundColor = .black
-    
+      
     setupUI()
   }
 
@@ -111,7 +111,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
       addTestImage()
       setupCanvasView()
       setupSlider()
-      setupButtons()
+//      setupButtons()
   }
 
     private func createScrollView() {
@@ -205,13 +205,12 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupButtons() {
+        
         undoButton.translatesAutoresizingMaskIntoConstraints = false
         undoButton.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(14)
             make.left.equalToSuperview().inset(14)
         }
-        
-        clearButton
     }
     
     func drawOnImage(_ image: UIImage) -> UIImage {
@@ -225,7 +224,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
          let context = UIGraphicsGetCurrentContext()!
         
          // Draw a red line
-        context.setLineWidth(0.25)
+        context.setLineWidth(0.125)
          context.setStrokeColor(UIColor.red.cgColor)
 
         for i in 1...10 {

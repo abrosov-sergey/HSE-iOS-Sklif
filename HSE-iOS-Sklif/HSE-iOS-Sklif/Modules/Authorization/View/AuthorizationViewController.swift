@@ -262,6 +262,8 @@ final class AuthorizationViewController: UIViewController {
            
            if login.count > 0 && password.count > 0 {
                sendUserLoginAndPassword(login: login, password: password)
+               
+               output?.userAuth()
            } else {
                let alert = UIAlertController(title: "Ошибка регистрации", message: "Неверно введен логин или пароль", preferredStyle: .alert)
                alert.addAction(UIAlertAction(title: "Ок", style: .default))
