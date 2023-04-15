@@ -10,6 +10,16 @@ protocol MarkupScreenViewOutput: AnyObject {
 }
 
 final class Canvas: UIView {
+    func undo() {
+        _ = lines.popLast()
+        setNeedsDisplay()
+    }
+    
+    func clear() {
+        lines.removeAll()
+        setNeedsDisplay()
+    }
+    
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         guard let context = UIGraphicsGetCurrentContext() else { return }
@@ -42,6 +52,7 @@ final class Canvas: UIView {
 //    var line = [CGPoint]()
     
     var lines = [[CGPoint]]()
+    var startPointOfNewPolygon = CGPoint()
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         lines.append([CGPoint]())
@@ -50,8 +61,25 @@ final class Canvas: UIView {
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let point = touches.first?.location(in: nil) else { return }
         
+        let newPoint = CGPoint(x: point.x, y: point.y - 100.0)
+        
         guard var lastLine = lines.popLast() else { return }
-        lastLine.append(point)
+        
+        if !lastLine.isEmpty {
+            startPointOfNewPolygon = lastLine[0]
+        }
+        
+        lastLine.append(newPoint)
+        
+        lines.append(lastLine)
+        
+        setNeedsDisplay()
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard var lastLine = lines.popLast() else { return }
+        
+        lastLine.append(startPointOfNewPolygon)
         
         lines.append(lastLine)
         
@@ -75,17 +103,35 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     
     private var undoButton: UIButton = {
         var button = UIButton(type: .system)
-        button.setTitle("Назад", for: .normal)
+        
+        button.setTitle("Отменить", for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 14)
+        
+        button.addTarget(self, action: #selector(undoButtonTapped), for: .touchUpInside)
+        
         return button
     }()
     
+    @objc fileprivate func undoButtonTapped() {
+        print("undo button pressed")
+        canvasView.undo()
+    }
+    
     private var clearButton: UIButton = {
         var button = UIButton(type: .system)
+        
         button.setTitle("Очистить", for: .normal)
         button.titleLabel?.font = .boldSystemFont(ofSize: 14)
+        
+        button.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
+        
         return button
     }()
+    
+    @objc fileprivate func clearButtonTapped() {
+        print("clear button pressed")
+        canvasView.clear()
+    }
 
   // MARK: - UIViewController
 
@@ -111,7 +157,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
       addTestImage()
       setupCanvasView()
       setupSlider()
-//      setupButtons()
+      setupButtons()
   }
 
     private func createScrollView() {
@@ -205,11 +251,19 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupButtons() {
+        self.view.addSubview(undoButton)
+        self.view.addSubview(clearButton)
         
         undoButton.translatesAutoresizingMaskIntoConstraints = false
         undoButton.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(14)
-            make.left.equalToSuperview().inset(14)
+            make.left.equalToSuperview().inset(28)
+            make.bottom.equalToSuperview().inset(35)
+        }
+        
+        clearButton.translatesAutoresizingMaskIntoConstraints = false
+        clearButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(28)
+            make.bottom.equalToSuperview().inset(35)
         }
     }
     
@@ -269,7 +323,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         sliderForPhoto.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.left.right.equalToSuperview().inset(14)
-            make.bottom.equalToSuperview().inset(50)
+            make.bottom.equalToSuperview().inset(60)
         }
         
         sliderForPhoto.thumbTintColor = UIColor(red: 47, green: 47, blue: 50)
