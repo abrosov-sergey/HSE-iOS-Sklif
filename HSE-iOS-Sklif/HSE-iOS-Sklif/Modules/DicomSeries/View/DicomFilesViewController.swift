@@ -254,11 +254,11 @@ final class DicomFilesViewController: UIViewController, UITableViewDelegate, UIT
             var sourceURL = myURL
             var destinationURL = "file:/"
             
-            print(sourceURL)
-            sourceURL.deletingLastPathComponent()
-            print(sourceURL)
-            sourceURL.appendingPathComponent("p")
-            print(sourceURL)
+//            print(sourceURL)
+//            sourceURL.deletingLastPathComponent()
+//            print(sourceURL)
+//            sourceURL.appendingPathComponent("p")
+//            print(sourceURL)
             
             sourceURL.startAccessingSecurityScopedResource()
             URL(string: destinationURL)!.startAccessingSecurityScopedResource()

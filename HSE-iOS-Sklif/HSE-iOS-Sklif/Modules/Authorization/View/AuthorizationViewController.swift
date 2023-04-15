@@ -14,6 +14,7 @@ protocol AuthorizationViewInput: AnyObject {
 
 protocol AuthorizationViewOutput: AnyObject {
   func viewDidLoad()
+  func userAuth()
 }
 
 
@@ -226,10 +227,61 @@ final class AuthorizationViewController: UIViewController {
             make.right.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().inset(133)
         }
+        
+        forgotPassword.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        forgotPassword.tag = 0
+        
+        signInButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        signInButton.tag = 1
+        
+        signUpButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        signUpButton.tag = 2
+    }
+    
+    @objc func buttonAction(sender: UIButton!) {
+       let btnsendtag: UIButton = sender
+       
+        let login = emailTextField.text ?? "", password = passwordTextField.text ?? ""
+        
+       if btnsendtag.tag == 0 {
+           dismiss(animated: true, completion: nil)
+       } else if btnsendtag.tag == 1 {
+           dismiss(animated: true, completion: nil)
+           
+           if checkUserLoginAndPassword(login: login, password: password) {
+               output?.userAuth()
+           } else {
+               let alert = UIAlertController(title: "Ошибка входа", message: "Неверно введен логин или пароль", preferredStyle: .alert)
+               alert.addAction(UIAlertAction(title: "Ок", style: .default))
+               present(alert, animated: true) {
+                   return
+               }
+           }
+       } else if btnsendtag.tag == 2 {
+           dismiss(animated: true, completion: nil)
+           
+           if login.count > 0 && password.count > 0 {
+               sendUserLoginAndPassword(login: login, password: password)
+           } else {
+               let alert = UIAlertController(title: "Ошибка регистрации", message: "Неверно введен логин или пароль", preferredStyle: .alert)
+               alert.addAction(UIAlertAction(title: "Ок", style: .default))
+               present(alert, animated: true) {
+                   return
+               }
+           }
+       }
+   }
+    
+    private func checkUserLoginAndPassword(login: String, password: String) -> Bool {
+        return true
+    }
+    
+    private func sendUserLoginAndPassword(login: String, password: String) {
+        
     }
 
   private func setupLocalization() {
-
+      
   }
 }
 

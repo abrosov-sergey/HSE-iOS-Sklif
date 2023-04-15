@@ -27,6 +27,11 @@ final class AuthorizationPresenter {
 
 extension AuthorizationPresenter: AuthorizationViewOutput {
 
+    func userAuth() {
+        
+        router?.showDicomScreen()
+    }
+    
   func viewDidLoad() {
 
   }

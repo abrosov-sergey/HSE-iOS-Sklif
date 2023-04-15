@@ -7,7 +7,7 @@
 //
 
 protocol DicomFilesModuleInput: AnyObject {
-
+    func userAuth()
 }
 
 protocol DicomFilesModuleOutput: AnyObject {
@@ -40,5 +40,7 @@ extension DicomFilesPresenter: DicomFilesViewOutput {
 // MARK: - DicomFilesInput
 
 extension DicomFilesPresenter: DicomFilesModuleInput {
-
+    func userAuth() {
+        //
+    }
 }
