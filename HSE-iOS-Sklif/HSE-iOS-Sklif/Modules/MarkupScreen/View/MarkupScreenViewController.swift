@@ -9,36 +9,65 @@ protocol MarkupScreenViewOutput: AnyObject {
   var listOfPhotos: [String] { get }
 }
 
+var defaultArea = 0.0
 var goodArea = 0.0
 var badArea = 0.0
+var sumOfGoodAreas = 0.0
+var sumOfBadAreas = 0.0
+var goodAreas = [Double]()
+var badAreas = [Double]()
+
+var lastIndexOfDefaultPolygon = -1
+
+var defaultAreaLabel = UILabel()
 var polygonGoodAreaLabel = UILabel()
 var polygonBadAreaLabel = UILabel()
 var percentBadFromGood = UILabel()
 var goodBadModuleSwitch = UISegmentedControl(items: ["-", "0", "+"])
 
+func rewritePolygonDefaultAreaLabel(newArea: Double) {
+    defaultArea = Double(round(newArea) / 100)
+    defaultAreaLabel.text = "S = \(defaultArea) (см^2)"
+}
+
 func rewritePolygonGoodAreaLabel(newArea: Double) {
     goodArea = Double(round(newArea) / 100)
-    polygonGoodAreaLabel.text = "Sg = \(goodArea) (см^2)"
+    sumOfGoodAreas += goodArea
+    
+    sumOfGoodAreas = Double(round(sumOfGoodAreas * 100) / 100)
+    
+    polygonGoodAreaLabel.text = "S+ = \(sumOfGoodAreas) (см^2)"
+    
+    goodAreas.append(goodArea)
 }
 
 func rewritePolygonBadAreaLabel(newArea: Double) {
     badArea = Double(round(newArea) / 100)
-    polygonBadAreaLabel.text = "Sr = \(badArea) (см^2)"
+    sumOfBadAreas += badArea
+    
+    sumOfBadAreas = Double(round(sumOfBadAreas * 100) / 100)
+    
+    polygonBadAreaLabel.text = "S- = \(sumOfBadAreas) (см^2)"
+    
+    badAreas.append(badArea)
 }
 
 func rewritePercentAreaLabel() {
-    if goodArea <= 0.0 || badArea <= 0.0 {
-        percentBadFromGood.text = ""
+    if sumOfGoodAreas <= 0.0 || sumOfBadAreas <= 0.0 {
+        percentBadFromGood.text = "S% = 0.00%"
     } else {
-        percentBadFromGood.text = "% = \(badArea / goodArea * 100)"
+        var percent = sumOfBadAreas / sumOfGoodAreas * 100
+        percent = Double(round(percent * 100) / 100)
+        percentBadFromGood.text = "S% = \(percent)%"
     }
 }
 
 final class Canvas: UIView {
     var lines = [[CGPoint]]()
-    var pointsInPolygon = [CGPoint]()
+    var pointsInPolygon = [[CGPoint]]()
     var polygonsColors = [[Double]]()
     var startPointOfNewPolygon = CGPoint()
+    var typeOfPolygon = [Int]()
     
     var randRed = Double.random(in: 0.0000...1.0000)
     var randGreen = Double.random(in: 0.0000...1.0000)
@@ -52,12 +81,38 @@ final class Canvas: UIView {
     
     func clear() {
         lines.removeAll()
+        pointsInPolygon.removeAll()
         polygonsColors.removeAll()
+        startPointOfNewPolygon = CGPoint()
+        typeOfPolygon.removeAll()
+        
+        randRed = Double.random(in: 0.0000...1.0000)
+        randGreen = Double.random(in: 0.0000...1.0000)
+        randBlue = Double.random(in: 0.0000...1.0000)
+        
+        defaultArea = 0.0
+        goodArea = 0.0
+        badArea = 0.0
+        sumOfGoodAreas = 0.0
+        sumOfBadAreas = 0.0
+        goodAreas.removeAll()
+        badAreas.removeAll()
+
+        lastIndexOfDefaultPolygon = -1
+
+        defaultAreaLabel.text = "S = ?"
+        polygonGoodAreaLabel.text = "Sg = ?"
+        polygonBadAreaLabel.text = "Sr = ?"
+        percentBadFromGood.text = "S% = ?"
+        
+        goodBadModuleSwitch.selectedSegmentIndex = 1
+        
         setNeedsDisplay()
     }
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
+        
         guard let context = UIGraphicsGetCurrentContext() else { return }
         
         UIGraphicsBeginImageContext(self.frame.size)
@@ -68,104 +123,86 @@ final class Canvas: UIView {
             self.backgroundColor = UIColor(patternImage: image)
         }
         
-        if polygonsColors.count == 0 {
-            polygonsColors.append([randRed, randGreen, randBlue])
-        }
-        
-        var numberOfPolygon = 0
-        context.setLineWidth(3)
-        context.setLineCap(.butt)
-        
-        lines.forEach { (line) in
-            if goodBadModuleSwitch.selectedSegmentIndex == 0 {
-                context.setStrokeColor(
-                    red: 1.0,
-                    green: 0.0,
-                    blue: 0.0,
-                    alpha: 1.0
-                )
-            } else if goodBadModuleSwitch.selectedSegmentIndex == 1 {
+        if polygonsColors.count != 0 {
+            var numberOfPolygon = 0
+            context.setLineWidth(3)
+            context.setLineCap(.butt)
+            
+            lines.forEach { (line) in
                 context.setStrokeColor(
                     red: polygonsColors[max(0, numberOfPolygon)][0],
                     green: polygonsColors[max(0, numberOfPolygon)][1],
                     blue: polygonsColors[max(0, numberOfPolygon)][2],
                     alpha: 1.0
                 )
-            } else if goodBadModuleSwitch.selectedSegmentIndex == 2 {
-                context.setStrokeColor(
-                    red: 0.0,
-                    green: 1.0,
-                    blue: 0.0,
-                    alpha: 1.0
-                )
-            }
-            
-            for (i, p) in line.enumerated() {
-                if i == 0 {
-                    context.move(to: p)
-                } else {
-                    context.addLine(to: p)
+                
+                for (i, p) in line.enumerated() {
+                    if i == 0 {
+                        context.move(to: p)
+                    } else {
+                        context.addLine(to: p)
+                    }
                 }
+                
+                numberOfPolygon += 1
+                
+                context.strokePath()
             }
             
-            numberOfPolygon += 1
+            context.setLineWidth(3)
+            context.setLineCap(.butt)
+            numberOfPolygon = 0
+            
+            pointsInPolygon.forEach { (points) in
+                if (typeOfPolygon[numberOfPolygon] == 1 && lastIndexOfDefaultPolygon != numberOfPolygon) {
+                    //
+                } else {
+                    context.setStrokeColor(
+                        red: polygonsColors[max(0, numberOfPolygon)][0],
+                        green: polygonsColors[max(0, numberOfPolygon)][1],
+                        blue: polygonsColors[max(0, numberOfPolygon)][2],
+                        alpha: 1.0
+                    )
+                    
+                    for (i, p) in points.enumerated() {
+                        context.move(to: p)
+                        context.addEllipse(in: CGRect(origin: p, size: CGSize(width: 1.0, height: 1.5)))
+                    }
+                    
+                    context.strokePath()
+                }
+                
+                numberOfPolygon += 1
+            }
             
             context.strokePath()
         }
-        
-        numberOfPolygon -= 1
-
-        if goodBadModuleSwitch.selectedSegmentIndex == 0 {
-            context.setStrokeColor(
-                red: 1.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.5
-            )
-        } else if goodBadModuleSwitch.selectedSegmentIndex == 1 {
-            context.setStrokeColor(
-                red: polygonsColors[max(0, numberOfPolygon)][0],
-                green: polygonsColors[max(0, numberOfPolygon)][1],
-                blue: polygonsColors[max(0, numberOfPolygon)][2],
-                alpha: 0.5
-            )
-        } else if goodBadModuleSwitch.selectedSegmentIndex == 2 {
-            context.setStrokeColor(
-                red: 0.0,
-                green: 1.0,
-                blue: 0.0,
-                alpha: 0.5
-            )
-        }
-        
-        context.setLineWidth(3)
-        context.setLineCap(.butt)
-        
-        for i in pointsInPolygon {
-            context.move(to: i)
-            context.addEllipse(in: CGRect(origin: i, size: CGSize(width: 1.0, height: 1.5)))
-        }
-        
-        context.strokePath()
-        
-        pointsInPolygon = [CGPoint]()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Changing colors
-        randRed = Double.random(in: 0.0000...1.0000)
-        randGreen = Double.random(in: 0.0000...1.0000)
-        randBlue = Double.random(in: 0.0000...1.0000)
-        
-        while randGreen > randBlue && randRed > randBlue {
+        if goodBadModuleSwitch.selectedSegmentIndex == 0 {
+            polygonsColors.append([1.0, 0.0, 0.0])
+        } else if goodBadModuleSwitch.selectedSegmentIndex == 1 {
             randRed = Double.random(in: 0.0000...1.0000)
             randGreen = Double.random(in: 0.0000...1.0000)
             randBlue = Double.random(in: 0.0000...1.0000)
+            
+            while randGreen > randBlue && randRed > randBlue {
+                randRed = Double.random(in: 0.0000...1.0000)
+                randGreen = Double.random(in: 0.0000...1.0000)
+                randBlue = Double.random(in: 0.0000...1.0000)
+            }
+            
+            polygonsColors.append([randRed, randGreen, randBlue])
+            
+            lastIndexOfDefaultPolygon = (typeOfPolygon.count ?? 0)
+        } else if goodBadModuleSwitch.selectedSegmentIndex == 2 {
+            polygonsColors.append([0.0, 1.0, 0.0])
         }
         
-        polygonsColors.append([randRed, randGreen, randBlue])
-        
         lines.append([CGPoint]())
+        pointsInPolygon.append([CGPoint]())
+        typeOfPolygon.append(goodBadModuleSwitch.selectedSegmentIndex)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -196,27 +233,23 @@ final class Canvas: UIView {
         for xCoordinate in stride(from: 0.0, through: 395.0, by: 10.0) {
             for yCoordinate in stride(from: 0.0, through: 674.0, by: 10.0) {
                 if contains(polygon: lines.last ?? [CGPoint](), test: CGPoint(x: xCoordinate, y: yCoordinate)) {
-                    pointsInPolygon.append(CGPoint(x: xCoordinate, y: yCoordinate))
+                    guard var lastPointsInPolygon = pointsInPolygon.popLast() else { return }
+                    lastPointsInPolygon.append(CGPoint(x: xCoordinate, y: yCoordinate))
+                    pointsInPolygon.append(lastPointsInPolygon)
                 }
             }
         }
         
-        // Adding area counting
-        if (pointsInPolygon.count > 2) {
+        // Changing area labels
+        if (pointsInPolygon[pointsInPolygon.count - 1].count >= 2) {
             if goodBadModuleSwitch.selectedSegmentIndex == 2 {
                 rewritePolygonGoodAreaLabel(newArea: getNewArea(polygon: lines.last ?? [CGPoint]()))
                 rewritePercentAreaLabel()
-            } else if goodBadModuleSwitch.selectedSegmentIndex == 0{
+            } else if goodBadModuleSwitch.selectedSegmentIndex == 0 {
                 rewritePolygonBadAreaLabel(newArea: getNewArea(polygon: lines.last ?? [CGPoint]()))
                 rewritePercentAreaLabel()
             } else if goodBadModuleSwitch.selectedSegmentIndex == 1 {
-                polygonGoodAreaLabel.text = ""
-                polygonBadAreaLabel.text = ""
-                percentBadFromGood.text = ""
-                
-                rewritePolygonGoodAreaLabel(newArea: getNewArea(polygon: lines.last ?? [CGPoint]()))
-                
-                polygonGoodAreaLabel.textColor = .white
+                rewritePolygonDefaultAreaLabel(newArea: getNewArea(polygon: lines.last ?? [CGPoint]()))
             }
         }
         
@@ -224,8 +257,10 @@ final class Canvas: UIView {
     }
     
     func getNewArea(polygon: [CGPoint]) -> Double {
+        if pointsInPolygon.isEmpty { return 0.0 }
+        
         var newArea: Double = 0.0
-        var pointInPolygon = pointsInPolygon[pointsInPolygon.count / 2]
+        var pointInPolygon = pointsInPolygon[pointsInPolygon.count - 1][pointsInPolygon[pointsInPolygon.count - 1].count / 2]
         
         for i in 0..<polygon.count - 1 {
             newArea += getAreaOfTriangle(
@@ -511,7 +546,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         sliderForPhoto.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.left.right.equalToSuperview().inset(14)
-            make.bottom.equalToSuperview().inset(60)
+            make.bottom.equalToSuperview().inset(65)
         }
         
         sliderForPhoto.thumbTintColor = UIColor(red: 47, green: 47, blue: 50)
@@ -552,9 +587,16 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupPolygonLabel() {
+        self.view.addSubview(defaultAreaLabel)
         self.view.addSubview(polygonGoodAreaLabel)
         self.view.addSubview(polygonBadAreaLabel)
         self.view.addSubview(percentBadFromGood)
+        
+        defaultAreaLabel.translatesAutoresizingMaskIntoConstraints = false
+        defaultAreaLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(55)
+        }
         
         polygonGoodAreaLabel.translatesAutoresizingMaskIntoConstraints = false
         polygonGoodAreaLabel.snp.makeConstraints { make in
@@ -574,15 +616,19 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
             make.bottom.equalToSuperview().inset(25)
         }
         
-        polygonGoodAreaLabel.text = ""
+        defaultAreaLabel.text = "S = ?"
+        defaultAreaLabel.textColor = UIColor.white
+        defaultAreaLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 10)
+        
+        polygonGoodAreaLabel.text = "Sg = ?"
         polygonGoodAreaLabel.textColor = UIColor.green
         polygonGoodAreaLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 10)
         
-        polygonBadAreaLabel.text = ""
+        polygonBadAreaLabel.text = "Sr = ?"
         polygonBadAreaLabel.textColor = UIColor.red
         polygonBadAreaLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 10)
         
-        percentBadFromGood.text = ""
+        percentBadFromGood.text = "S% = ?"
         percentBadFromGood.textColor = UIColor.blue
         percentBadFromGood.font = UIFont(name: "HelveticaNeue-Bold", size: 10)
     }
@@ -598,6 +644,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
         
         goodBadModuleSwitch.backgroundColor = .white
         goodBadModuleSwitch.selectedSegmentTintColor = .blue
+        goodBadModuleSwitch.selectedSegmentIndex = 1
     }
     
   private func setupLocalization() {
