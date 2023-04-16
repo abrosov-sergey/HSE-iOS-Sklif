@@ -36,9 +36,17 @@ func rewritePolygonGoodAreaLabel(newArea: Double) {
     
     sumOfGoodAreas = Double(round(sumOfGoodAreas * 100) / 100)
     
-    polygonGoodAreaLabel.text = "S+ = \(sumOfGoodAreas) (см^2)"
+    sumOfGoodAreas = max(0.0, sumOfGoodAreas)
     
-    goodAreas.append(goodArea)
+    if (goodArea >= 0.0) {
+        goodAreas.append(goodArea)
+    }
+    
+    if goodAreas.isEmpty {
+        sumOfGoodAreas = 0.0
+    }
+    
+    polygonGoodAreaLabel.text = "S+ = \(sumOfGoodAreas) (см^2)"
 }
 
 func rewritePolygonBadAreaLabel(newArea: Double) {
@@ -47,9 +55,17 @@ func rewritePolygonBadAreaLabel(newArea: Double) {
     
     sumOfBadAreas = Double(round(sumOfBadAreas * 100) / 100)
     
-    polygonBadAreaLabel.text = "S- = \(sumOfBadAreas) (см^2)"
+    sumOfBadAreas = max(0.0, sumOfBadAreas)
     
-    badAreas.append(badArea)
+    if (badArea >= 0.0) {
+        badAreas.append(badArea)
+    }
+    
+    if badAreas.isEmpty {
+        sumOfBadAreas = 0.0
+    }
+    
+    polygonBadAreaLabel.text = "S- = \(sumOfBadAreas) (см^2)"
 }
 
 func rewritePercentAreaLabel() {
@@ -74,8 +90,54 @@ final class Canvas: UIView {
     var randBlue = Double.random(in: 0.0000...1.0000)
     
     func undo() {
-        _ = lines.popLast()
-        polygonsColors.removeLast()
+//        _ = lines.popLast()
+//        polygonsColors.removeLast()
+        
+        var lastIndex = -1
+
+        for i in 0..<typeOfPolygon.count {
+            if typeOfPolygon[i] == goodBadModuleSwitch.selectedSegmentIndex {
+                lastIndex = i
+            }
+        }
+        
+        if lastIndex == -1 {
+            return
+        }
+        
+        if goodBadModuleSwitch.selectedSegmentIndex == 0 && !badAreas.isEmpty {
+            lines.remove(at: lastIndex)
+            pointsInPolygon.remove(at: lastIndex)
+            polygonsColors.remove(at: lastIndex)
+            typeOfPolygon.remove(at: lastIndex)
+            
+            badArea = 0.0
+            sumOfBadAreas -= badAreas[badAreas.count - 1]
+            
+            rewritePolygonBadAreaLabel(newArea: (-1.0) * badAreas[badAreas.count - 1])
+            rewritePercentAreaLabel()
+            
+            badAreas.removeLast()
+            
+        } else if goodBadModuleSwitch.selectedSegmentIndex == 1 {
+            
+        } else if goodBadModuleSwitch.selectedSegmentIndex == 2 && !goodAreas.isEmpty {
+            lines.remove(at: lastIndex)
+            pointsInPolygon.remove(at: lastIndex)
+            polygonsColors.remove(at: lastIndex)
+            typeOfPolygon.remove(at: lastIndex)
+            
+            goodArea = 0.0
+            sumOfGoodAreas -= goodAreas[goodAreas.count - 1]
+
+            rewritePolygonGoodAreaLabel(newArea: (-1.0) * goodAreas[goodAreas.count - 1])
+            rewritePercentAreaLabel()
+            
+            goodAreas.removeLast()
+        }
+        
+        recalcLastIndexOfDefaultPolygon()
+        
         setNeedsDisplay()
     }
     
@@ -108,6 +170,16 @@ final class Canvas: UIView {
         goodBadModuleSwitch.selectedSegmentIndex = 1
         
         setNeedsDisplay()
+    }
+    
+    func recalcLastIndexOfDefaultPolygon() {
+        lastIndexOfDefaultPolygon = -1
+        
+        for i in 0..<typeOfPolygon.count {
+            if typeOfPolygon[i] == 1 {
+                lastIndexOfDefaultPolygon = i
+            }
+        }
     }
     
     override func draw(_ rect: CGRect) {
