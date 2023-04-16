@@ -14,6 +14,8 @@ var goodArea = 0.0
 var badArea = 0.0
 var sumOfGoodAreas = 0.0
 var sumOfBadAreas = 0.0
+
+var defaultAreas = [Double]()
 var goodAreas = [Double]()
 var badAreas = [Double]()
 
@@ -27,7 +29,20 @@ var goodBadModuleSwitch = UISegmentedControl(items: ["-", "0", "+"])
 
 func rewritePolygonDefaultAreaLabel(newArea: Double) {
     defaultArea = Double(round(newArea) / 100)
-    defaultAreaLabel.text = "S = \(defaultArea) (см^2)"
+
+    if (defaultArea >= 0.0) {
+        defaultAreas.append(defaultArea)
+    }
+    
+    if defaultAreas.isEmpty {
+        defaultArea = -1.0
+    }
+    
+    if defaultArea >= 0.0 {
+        defaultAreaLabel.text = "S = \(defaultArea) (см^2)"
+    } else {
+        defaultAreaLabel.text = "S = ?"
+    }
 }
 
 func rewritePolygonGoodAreaLabel(newArea: Double) {
@@ -118,9 +133,25 @@ final class Canvas: UIView {
             rewritePercentAreaLabel()
             
             badAreas.removeLast()
-            
         } else if goodBadModuleSwitch.selectedSegmentIndex == 1 {
+            lines.remove(at: lastIndex)
+            pointsInPolygon.remove(at: lastIndex)
+            polygonsColors.remove(at: lastIndex)
+            typeOfPolygon.remove(at: lastIndex)
             
+            defaultArea = 0.0
+            defaultAreas.removeLast()
+            
+            recalcLastIndexOfDefaultPolygon()
+            
+            if lastIndexOfDefaultPolygon != -1 {
+                defaultArea = (defaultAreas[defaultAreas.count - 1] ?? (-1.0)) * 100.00
+                rewritePolygonDefaultAreaLabel(newArea: defaultArea)
+                defaultAreas.removeLast()
+            } else {
+                defaultArea = -1.0
+                rewritePolygonDefaultAreaLabel(newArea: defaultArea)
+            }
         } else if goodBadModuleSwitch.selectedSegmentIndex == 2 && !goodAreas.isEmpty {
             lines.remove(at: lastIndex)
             pointsInPolygon.remove(at: lastIndex)
@@ -573,7 +604,7 @@ final class MarkupScreenViewController: UIViewController, UIScrollViewDelegate {
          let context = UIGraphicsGetCurrentContext()!
         
          // Draw a red line
-        context.setLineWidth(0.2)
+        context.setLineWidth(0.25)
          context.setStrokeColor(UIColor.red.cgColor)
 
         for i in 1...10 {
